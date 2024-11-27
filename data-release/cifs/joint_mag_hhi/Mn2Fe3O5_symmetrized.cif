@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Mn2Fe3O5
+_symmetry_space_group_name_H-M   P-1
+_cell_length_a   5.47512000
+_cell_length_b   5.50230000
+_cell_length_c   8.24408000
+_cell_angle_alpha   82.96680000
+_cell_angle_beta   71.33730000
+_cell_angle_gamma   69.54000000
+_symmetry_Int_Tables_number   2
+_chemical_formula_structural   Mn2Fe3O5
+_chemical_formula_sum   'Mn4 Fe6 O10'
+_cell_volume   220.44084459
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+  2  '-x, -y, -z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Mn  Mn0  2  0.40015500  0.49803000  0.20398500  1.0
+  Mn  Mn1  1  0.00000000  0.50000000  0.00000000  1.0
+  Mn  Mn2  1  0.50000000  0.00000000  0.00000000  1.0
+  Fe  Fe3  2  0.09943500  0.00227000  0.79582500  1.0
+  Fe  Fe4  2  0.19660500  0.49893000  0.60075500  1.0
+  Fe  Fe5  2  0.29813500  0.99690000  0.40075500  1.0
+  O  O6  2  0.05621500  0.73890000  0.40776500  1.0
+  O  O7  2  0.16143500  0.24002000  0.20352500  1.0
+  O  O8  2  0.23904500  0.75633000  0.00751500  1.0
+  O  O9  2  0.34080500  0.26411000  0.79356500  1.0
+  O  O10  2  0.43235500  0.76363000  0.60340500  1.0
