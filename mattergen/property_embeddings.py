@@ -500,7 +500,7 @@ class PropertyEmbedding(torch.nn.Module):
         else:
             # raw values for the conditional data as seen by the user, eg dft_bulk_modulus=torch.tensor([300]*n_structures_in_batch)
             data = batch[self.name]
-            if isinstance(data, torch.Tensor):
+            if isinstance(data, torch.Tensor) and data.dim() == 2:
                 # [B, 1] => [B,]
                 data = data.squeeze(-1)
 
