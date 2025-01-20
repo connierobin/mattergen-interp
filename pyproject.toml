@@ -29,7 +29,6 @@ requires-python = ">= 3.10"
 
 dependencies = [
 "ase>=3.22.1",
-"atomate2>=0.0.13",
 "autopep8",
 "cachetools",
 "contextlib2",
@@ -46,7 +45,6 @@ dependencies = [
 "notebook>=7.2.2",
 "numpy<2.0",  # pin numpy before breaking changes in 2.0
 "omegaconf==2.3.0",
-"pyg-lib", 
 "pymatgen>=2024.6.4",
 "pylint",
 "pytest",
@@ -64,7 +62,6 @@ dependencies = [
 "torch_scatter",
 "torch_sparse",
 "tqdm",
-"urllib3<2.0.0",
 "wandb>=0.10.33",
 ]
 
