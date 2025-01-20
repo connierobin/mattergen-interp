@@ -193,11 +193,11 @@ python scripts/finetune.py adapter.model_path=$MODEL_PATH data_module=mp_20 +lig
 > You can select any property that is available in the dataset. See [`mattergen/conf/data_module/mp_20.yaml`](mattergen/conf/data_module/mp_20.yaml) or [`mattergen/conf/data_module/alex_mp_20.yaml`](mattergen/conf/data_module/alex_mp_20.yaml) for the list of supported properties. You can also add your own custom property data. See [below](#fine-tune-on-your-own-property-data) for instructions.
 
 #### Multi-property fine-tuning
-You can also fine-tune MatterGen on multiple properties. For instance, to fine-tune it on `dft_mag_density` and `hhi_score`, you can use the following command.
+You can also fine-tune MatterGen on multiple properties. For instance, to fine-tune it on `dft_mag_density` and `dft_band_gap`, you can use the following command.
 
 ```bash
 export PROPERTY1=dft_mag_density
-export PROPERTY2=hhi_score
+export PROPERTY2=dft_band_gap 
 export MODEL_PATH=checkpoints/mattergen_base
 python scripts/finetune.py adapter.model_path=$MODEL_PATH data_module=mp_20 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY1=$PROPERTY1 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY2=$PROPERTY2 ~trainer.logger data_module.properties=["$PROPERTY1", "$PROPERTY2"]
 ```
