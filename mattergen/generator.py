@@ -205,6 +205,27 @@ class CrystalGenerator:
             f"but got {self.num_atoms_distribution}. To add your own distribution, "
             "please add it to mattergen.common.data.num_atoms_distribution.NUM_ATOMS_DISTRIBUTIONS."
         )
+        if len(self.target_compositions_dict) > 0:
+            assert (
+                self.cfg.lightning_module.diffusion_module.loss_fn.weights.get(
+                    "atomic_numbers", 0.0
+                )
+                == 0.0
+                and "atomic_numbers"
+                not in self.cfg.lightning_module.diffusion_module.corruption.discrete_corruptions
+            ), "Input model appears to have been trained for crystal generation (i.e., with atom type denoising), not crystal structure prediction. Please use a model trained for crystal structure prediction instead."
+            sampling_cfg = self._load_sampling_config(
+                sampling_config_name=self.sampling_config_name,
+                sampling_config_overrides=self.sampling_config_overrides,
+                sampling_config_path=self.sampling_config_path,
+            )
+            if (
+                "atomic_numbers" in sampling_cfg.sampler_partial.predictor_partials
+                or "atomic_numbers" in sampling_cfg.sampler_partial.corrector_partials
+            ):
+                raise ValueError(
+                    "Incompatible sampling config for crystal structure prediction: found atomic_numbers in predictor_partials or corrector_partials. Use the 'csp' sampling config instead, e.g., via --sampling-config-name=csp."
+                )
 
     @property
     def model(self) -> DiffusionLightningModule:
@@ -344,7 +365,6 @@ class CrystalGenerator:
 
         print("\nSampling config:")
         print(OmegaConf.to_yaml(sampling_config, resolve=True))
-
         condition_loader = self.get_condition_loader(sampling_config, target_compositions_dict)
 
         sampler_partial = instantiate(sampling_config.sampler_partial)
