@@ -14,6 +14,7 @@
 
 MatterGen is a generative model for inorganic materials design across the periodic table that can be fine-tuned to steer the generation towards a wide range of property constraints.
 
+
 ## Table of Contents
 - [Installation](#installation)
 - [Get started with a pre-trained model](#get-started-with-a-pre-trained-model)
@@ -28,9 +29,10 @@ MatterGen is a generative model for inorganic materials design across the period
 
 ## Installation
 
+
 The easiest way to install prerequisites is via [uv](https://docs.astral.sh/uv/), a fast Python package and project manager.
 
-The MatterGen environment can be installed via the following command:
+The MatterGen environment can be installed via the following command (assumes you are running Linux and have a CUDA GPU):
 ```bash
 pip install uv
 uv venv .venv --python 3.10 
@@ -43,6 +45,24 @@ Note that our datasets and model checkpoints are provided inside this repo via [
 git lfs --version
 ```
 If this prints some version like `git-lfs/3.0.2 (GitHub; linux amd64; go 1.18.1)`, you can skip the following step.
+
+### Apple Silicon
+> [!WARNING]
+> Running MatterGen on Apple Silicon is **experimental**. Use at your own risk.  
+> Further, you need to run `export PYTORCH_ENABLE_MPS_FALLBACK=1` before any training or generation run.
+
+To install the environment for Apple Silicon, run these commands:
+```bash
+cp pyproject.toml pyproject.linux.toml
+mv pyproject_apple_silicon.toml pyproject.toml
+pip install uv
+uv venv .venv --python 3.10 
+source .venv/bin/activate
+uv pip install -e .
+export PYTORCH_ENABLE_MPS_FALLBACK=1  # required to run MatterGen on Apple Silicon
+```
+
+
 
 ### Install Git LFS
 If Git LFS was not installed before you cloned this repo, you can install it and download the missing files via:
@@ -156,6 +176,8 @@ You can train the MatterGen base model on `mp_20` using the following command.
 ```bash
 python scripts/run.py data_module=mp_20 ~trainer.logger
 ```
+> [!NOTE]
+> For Apple Silicon training, add `~trainer.strategy trainer.accelerator=mps` to the above command.
 
 The validation loss (`loss_val`) should reach 0.4 after 360 epochs (about 80k steps). The output checkpoints can be found at `outputs/singlerun/${now:%Y-%m-%d}/${now:%H-%M-%S}`. We call this folder `$MODEL_PATH` for future reference. 
 > [!NOTE]
@@ -168,6 +190,9 @@ To train the MatterGen base model on `alex_mp_20`, use the following command:
 ```bash
 python scripts/run.py data_module=alex_mp_20 ~trainer.logger trainer.accumulate_grad_batches=4
 ```
+> [!NOTE]
+> For Apple Silicon training, add `~trainer.strategy trainer.accelerator=mps` to the above command.
+
 > [!TIP]
 > Note that a single GPU's memory usually is not enough for the batch size of 512, hence we accumulate gradients over 4 batches. If you still run out of memory, increase this further.
 
@@ -186,8 +211,10 @@ export PROPERTY=dft_mag_density
 export MODEL_PATH=checkpoints/mattergen_base
 python scripts/finetune.py adapter.model_path=$MODEL_PATH data_module=mp_20 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY=$PROPERTY ~trainer.logger data_module.properties=["$PROPERTY"]
 ```
-
 `dft_mag_density` denotes the target property for fine-tuning. 
+> [!NOTE]
+> For Apple Silicon training, add `~trainer.strategy trainer.accelerator=mps` to the above command.
+
 
 > [!TIP]
 > You can select any property that is available in the dataset. See [`mattergen/conf/data_module/mp_20.yaml`](mattergen/conf/data_module/mp_20.yaml) or [`mattergen/conf/data_module/alex_mp_20.yaml`](mattergen/conf/data_module/alex_mp_20.yaml) for the list of supported properties. You can also add your own custom property data. See [below](#fine-tune-on-your-own-property-data) for instructions.
@@ -199,12 +226,15 @@ You can also fine-tune MatterGen on multiple properties. For instance, to fine-t
 export PROPERTY1=dft_mag_density
 export PROPERTY2=dft_band_gap 
 export MODEL_PATH=checkpoints/mattergen_base
-python scripts/finetune.py adapter.model_path=$MODEL_PATH data_module=mp_20 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY1=$PROPERTY1 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY2=$PROPERTY2 ~trainer.logger data_module.properties=["$PROPERTY1", "$PROPERTY2"]
+python scripts/finetune.py adapter.model_path=$MODEL_PATH data_module=mp_20 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY1=$PROPERTY1 +lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.$PROPERTY2=$PROPERTY2 ~trainer.logger data_module.properties=["$PROPERTY1","$PROPERTY2"]
 ```
 > [!TIP]
 > Add more properties analogously by adding these overrides:
 > 1. `+lightning_module/diffusion_module/model/property_embeddings@adapter.adapter.property_embeddings_adapt.<my_property>=<my_property>`
-> 2. Add `<my_property>` to the `data_module.properties=["$PROPERTY1", "$PROPERTY2", ..., <my_property>]` override.
+> 2. Add `<my_property>` to the `data_module.properties=["$PROPERTY1","$PROPERTY2",...,<my_property>]` override.
+
+> [!NOTE]
+> For Apple Silicon training, add `~trainer.strategy trainer.accelerator=mps` to the above command.
 
 #### Fine-tune on your own property data
 You may also fine-tune MatterGen on your own property data. Essentially what you need is a property value (typically `float`) for a subset of the data you want to train on (e.g., `alex_mp_20`). Proceed as follows:
