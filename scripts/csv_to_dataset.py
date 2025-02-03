@@ -7,8 +7,7 @@ import os
 from mattergen.common.data.dataset import CrystalDataset
 from mattergen.common.globals import PROJECT_ROOT
 
-
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--csv-folder",
@@ -37,7 +36,3 @@ def main():
                 csv_path=f"{args.csv_folder}/{file}",
                 cache_path=f"{args.cache_folder}/{args.dataset_name}/{file.split('.')[0]}",
             )
-
-
-if __name__ == "__main__":
-    main()
