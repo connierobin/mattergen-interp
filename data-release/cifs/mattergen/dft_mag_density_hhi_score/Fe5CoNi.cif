@@ -1,0 +1,33 @@
+# generated using pymatgen
+data_Fe5CoNi
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   2.86422629
+_cell_length_b   2.86422629
+_cell_length_c   10.22983483
+_cell_angle_alpha   98.04748574
+_cell_angle_beta   98.04748574
+_cell_angle_gamma   90.00000000
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Fe5CoNi
+_chemical_formula_sum   'Fe5 Co1 Ni1'
+_cell_volume   82.26224561
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Fe  Fe0  1  0.55587107  0.55587107  0.11174214  1
+  Fe  Fe1  1  0.69739726  0.69739726  0.39479453  1
+  Fe  Fe2  1  0.84066237  0.84066237  0.68132474  1
+  Fe  Fe3  1  0.26961440  0.26961440  0.53922880  1
+  Fe  Fe4  1  0.98431912  0.98431912  0.96863823  1
+  Co  Co5  1  0.12668177  0.12668177  0.25336355  1
+  Ni  Ni6  1  0.41265627  0.41265627  0.82531253  1

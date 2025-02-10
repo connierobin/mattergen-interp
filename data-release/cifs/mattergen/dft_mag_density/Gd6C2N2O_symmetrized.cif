@@ -1,0 +1,37 @@
+# generated using pymatgen
+data_Gd6C2N2O
+_symmetry_space_group_name_H-M   C2
+_cell_length_a   6.16519768
+_cell_length_b   10.66832212
+_cell_length_c   6.16334484
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   109.70718504
+_cell_angle_gamma   90.00000000
+_symmetry_Int_Tables_number   5
+_chemical_formula_structural   Gd6C2N2O
+_chemical_formula_sum   'Gd12 C4 N4 O2'
+_cell_volume   381.63379650
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+  2  '-x, y, -z'
+  3  'x+1/2, y+1/2, z'
+  4  '-x+1/2, y+1/2, -z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Gd  Gd0  4  0.23333527  0.13594779  0.74797482  1
+  Gd  Gd1  4  0.23613269  0.95869295  0.25973353  1
+  Gd  Gd2  4  0.24071586  0.78492513  0.74337293  1
+  C  C3  2  0.00000000  0.79380271  0.00000000  1
+  C  C4  2  0.00000000  0.95930467  0.50000000  1
+  N  N5  2  0.00000000  0.12718407  0.00000000  1
+  N  N6  2  0.00000000  0.29081056  0.50000000  1
+  O  O7  2  0.00000000  0.63060370  0.50000000  1

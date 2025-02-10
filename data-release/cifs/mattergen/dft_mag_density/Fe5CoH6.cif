@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Fe5CoH6
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   3.76618619
+_cell_length_b   4.60543272
+_cell_length_c   5.30988502
+_cell_angle_alpha   106.69147395
+_cell_angle_beta   90.00000000
+_cell_angle_gamma   114.13482150
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Fe5CoH6
+_chemical_formula_sum   'Fe5 Co1 H6'
+_cell_volume   79.77746769
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Fe  Fe0  1  0.00000000  0.00000000  0.00000000  1
+  Fe  Fe1  1  0.33355414  0.66710827  0.66651147  1
+  Fe  Fe2  1  0.33297285  0.66594570  0.16782006  1
+  Fe  Fe3  1  0.66644586  0.33289173  0.33348853  1
+  Fe  Fe4  1  0.66702715  0.33405430  0.83217994  1
+  Co  Co5  1  0.00000000  0.00000000  0.50000000  1
+  H  H6  1  0.83616746  0.67233492  0.17269173  1
+  H  H7  1  0.50000000  0.00000000  0.50000000  1
+  H  H8  1  0.16383254  0.32766508  0.82730827  1
+  H  H9  1  0.83639108  0.67278216  0.66364952  1
+  H  H10  1  0.16360892  0.32721784  0.33635048  1
+  H  H11  1  0.50000000  0.00000000  0.00000000  1

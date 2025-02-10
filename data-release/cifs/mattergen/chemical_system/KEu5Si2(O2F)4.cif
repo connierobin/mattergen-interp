@@ -1,0 +1,46 @@
+# generated using pymatgen
+data_KEu5Si2(O2F)4
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   7.24098150
+_cell_length_b   7.24471341
+_cell_length_c   7.27678869
+_cell_angle_alpha   86.09858164
+_cell_angle_beta   68.36068467
+_cell_angle_gamma   66.31201065
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   KEu5Si2(O2F)4
+_chemical_formula_sum   'K1 Eu5 Si2 O8 F4'
+_cell_volume   323.49104292
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  K  K0  1  0.27827259  0.77948101  0.48143452  1
+  Eu  Eu1  1  0.78975912  0.61244946  0.66495732  1
+  Eu  Eu2  1  0.86399204  0.21046805  0.28074448  1
+  Eu  Eu3  1  0.30871433  0.20276603  0.67722740  1
+  Eu  Eu4  1  0.32733117  0.43392211  0.08378527  1
+  Eu  Eu5  1  0.79182339  0.82931453  0.07851459  1
+  Si  Si6  1  0.78690021  0.15741000  0.76786714  1
+  Si  Si7  1  0.32181081  0.88222256  0.00154072  1
+  O  O8  1  0.99616079  0.20853858  0.61206133  1
+  O  O9  1  0.84062115  0.91031659  0.72869863  1
+  O  O10  1  0.53136206  0.71176355  0.05020746  1
+  O  O11  1  0.25244351  0.12603702  0.05754954  1
+  O  O12  1  0.39714838  0.84939706  0.75252224  1
+  O  O13  1  0.57327723  0.31779393  0.71621572  1
+  O  O14  1  0.72996973  0.20003491  0.00691961  1
+  O  O15  1  0.10549104  0.83304739  0.13332993  1
+  F  F16  1  0.61288191  0.03370211  0.38488220  1
+  F  F17  1  0.22812104  0.46104708  0.43717418  1
+  F  F18  1  0.05908945  0.51487729  0.88307139  1
+  F  F19  1  0.82773244  0.55520862  0.32302244  1

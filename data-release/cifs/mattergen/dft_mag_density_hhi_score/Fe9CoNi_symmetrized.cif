@@ -1,0 +1,40 @@
+# generated using pymatgen
+data_Fe9CoNi
+_symmetry_space_group_name_H-M   Cm
+_cell_length_a   11.80911965
+_cell_length_b   4.04478268
+_cell_length_c   6.22863682
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   119.96691799
+_cell_angle_gamma   90.00000000
+_symmetry_Int_Tables_number   8
+_chemical_formula_structural   Fe9CoNi
+_chemical_formula_sum   'Fe18 Co2 Ni2'
+_cell_volume   257.73953090
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+  2  'x, -y, z'
+  3  'x+1/2, y+1/2, z'
+  4  'x+1/2, -y+1/2, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Fe  Fe0  2  0.03265028  0.00000000  0.54197068  1
+  Fe  Fe1  2  0.07779262  0.50000000  0.27052653  1
+  Fe  Fe2  2  0.12360197  0.00000000  0.99601198  1
+  Fe  Fe3  2  0.21355287  0.00000000  0.44831475  1
+  Fe  Fe4  2  0.25949270  0.50000000  0.17527293  1
+  Fe  Fe5  2  0.30419836  0.00000000  0.90403695  1
+  Fe  Fe6  2  0.34859412  0.50000000  0.62970367  1
+  Fe  Fe7  2  0.39512515  0.00000000  0.35678569  1
+  Fe  Fe8  2  0.44208829  0.50000000  0.08666833  1
+  Co  Co9  2  0.17004902  0.50000000  0.72146065  1
+  Ni  Ni10  2  0.48643058  0.00000000  0.81299785  1

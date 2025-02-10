@@ -1,0 +1,54 @@
+# generated using pymatgen
+data_MgSc11C7
+_symmetry_space_group_name_H-M   Cmce
+_cell_length_a   13.32152949
+_cell_length_b   11.55679641
+_cell_length_c   16.30818711
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   90.00000000
+_cell_angle_gamma   90.00000000
+_symmetry_Int_Tables_number   64
+_chemical_formula_structural   MgSc11C7
+_chemical_formula_sum   'Mg8 Sc88 C56'
+_cell_volume   2510.71396798
+_cell_formula_units_Z   8
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+  2  '-x, -y, -z'
+  3  '-x+1/2, -y, z+1/2'
+  4  'x+1/2, y, -z+1/2'
+  5  'x, -y, -z'
+  6  '-x, y, z'
+  7  '-x+1/2, y, -z+1/2'
+  8  'x+1/2, -y, z+1/2'
+  9  'x+1/2, y+1/2, z'
+  10  '-x+1/2, -y+1/2, -z'
+  11  '-x, -y+1/2, z+1/2'
+  12  'x, y+1/2, -z+1/2'
+  13  'x+1/2, -y+1/2, -z'
+  14  '-x+1/2, y+1/2, z'
+  15  '-x, y+1/2, -z+1/2'
+  16  'x, -y+1/2, z+1/2'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Mg  Mg0  8  0.00000000  0.08151798  0.57827197  1
+  Sc  Sc1  16  0.12922482  0.15695091  0.08203032  1
+  Sc  Sc2  16  0.13081512  0.00360121  0.24384833  1
+  Sc  Sc3  16  0.13760936  0.17396142  0.41409011  1
+  Sc  Sc4  16  0.23890299  0.41569244  0.41682823  1
+  Sc  Sc5  8  0.00000000  0.07172761  0.91094398  1
+  Sc  Sc6  8  0.00000000  0.23984780  0.74979903  1
+  Sc  Sc7  8  0.25000000  0.23546858  0.25000000  1
+  C  C8  16  0.12799199  0.17160614  0.82554993  1
+  C  C9  16  0.24770541  0.07945405  0.33950606  1
+  C  C10  8  0.00000000  0.09474455  0.17710657  1
+  C  C11  8  0.12127837  0.00000000  0.00000000  1
+  C  C12  8  0.25000000  0.25000000  0.00000000  1

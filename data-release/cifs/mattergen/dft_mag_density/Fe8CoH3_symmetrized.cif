@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Fe8CoH3
+_symmetry_space_group_name_H-M   P1
+_cell_length_a   4.46514156
+_cell_length_b   4.48541849
+_cell_length_c   5.84304451
+_cell_angle_alpha   82.80047278
+_cell_angle_beta   75.27921147
+_cell_angle_gamma   79.48116955
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Fe8CoH3
+_chemical_formula_sum   'Fe8 Co1 H3'
+_cell_volume   110.89729247
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Fe  Fe0  1  0.01373323  0.59296575  0.75795762  1
+  Fe  Fe1  1  0.13166960  0.80134590  0.30107593  1
+  Fe  Fe2  1  0.24836233  0.02187269  0.86096344  1
+  Fe  Fe3  1  0.36263325  0.24857371  0.41415009  1
+  Fe  Fe4  1  0.57230436  0.70830284  0.52979089  1
+  Fe  Fe5  1  0.69004148  0.91154746  0.07911620  1
+  Fe  Fe6  1  0.80945457  0.14100875  0.64209892  1
+  Fe  Fe7  1  0.90067588  0.36099454  0.18703395  1
+  Co  Co8  1  0.46690363  0.47496146  0.97372349  1
+  H  H9  1  0.29981343  0.13836251  0.13887152  1
+  H  H10  1  0.41071562  0.36571087  0.69771585  1
+  H  H11  1  0.96591106  0.47540192  0.47037904  1

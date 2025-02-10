@@ -1,0 +1,38 @@
+# generated using pymatgen
+data_Gd6CNO4
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   6.07353676
+_cell_length_b   6.07353676
+_cell_length_c   6.07083221
+_cell_angle_alpha   99.55849096
+_cell_angle_beta   99.55849096
+_cell_angle_gamma   120.08159315
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   Gd6CNO4
+_chemical_formula_sum   'Gd6 C1 N1 O4'
+_cell_volume   182.75139574
+_cell_formula_units_Z   1
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Gd  Gd0  1  0.27201840  0.23040210  0.24417250  1
+  Gd  Gd1  1  0.76959790  0.72798160  0.75582750  1
+  Gd  Gd2  1  0.10899123  0.40432843  0.75489947  1
+  Gd  Gd3  1  0.43259322  0.06709623  0.75512414  1
+  Gd  Gd4  1  0.93290377  0.56740678  0.24487586  1
+  Gd  Gd5  1  0.59567157  0.89100877  0.24510053  1
+  C  C6  1  0.18547174  0.81452826  0.00000000  1
+  N  N7  1  0.51851787  0.48148213  0.00000000  1
+  O  O8  1  0.02159829  0.97840171  0.50000000  1
+  O  O9  1  0.68401707  0.31598293  0.50000000  1
+  O  O10  1  0.35020643  0.64979357  0.50000000  1
+  O  O11  1  0.85212210  0.14787790  0.00000000  1
