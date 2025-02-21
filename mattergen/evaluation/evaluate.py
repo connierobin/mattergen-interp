@@ -32,10 +32,11 @@ def evaluate(
         structures: List of structures to evaluate.
         relax: Whether to relax the structures before evaluation. Note that if this is run, `energies` will be ignored.
         energies: Energies of the structures if already relaxed and computed externally (e.g., from DFT).
-        reference_dataset: Reference dataset.
-        ordered_structure_matcher: Matcher for ordered structures.
-        disordered_structure_matcher: Matcher for disordered structures.
-        n_jobs: Number of parallel jobs.
+        reference: Reference dataset. If this is None, the default reference dataset will be used.
+        structure_matcher: Structure matcher to use for matching the structures.
+        save_as: Save the metrics as a JSON file.
+        potential_load_path: Path to the Machine Learning potential to use for relaxation.
+        device: Device to use for relaxation.
 
     Returns:
         metrics: a dictionary of metrics and their values.
