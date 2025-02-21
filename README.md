@@ -147,6 +147,11 @@ Here, we expect `energies.npy` to be a numpy array with the entries being `float
 
 ### Evaluate using your own reference dataset
 
+> [!IMPORTANT]
+> If you are planning to use MatterSim to evaluate the stability of the generated structures, then the reference dataset you provide must contain energies
+> that are compatible with MatterSim, meaning they should be either DFT-computed energies calculated according to the Materials Project Compatbility scheme,
+> or energies directly comptued with MatterSim.
+
 If you want to use your own custom dataset for evaluation, you first need to serialize and save it by doing so:
 
 ``` python
