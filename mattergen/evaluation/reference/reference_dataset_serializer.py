@@ -19,7 +19,7 @@ from pymatgen.entries.computed_entries import ComputedStructureEntry
 from tqdm.autonotebook import tqdm
 
 from mattergen.evaluation.reference.reference_dataset import ReferenceDataset, ReferenceDatasetImpl
-from mattergen.evaluation.utils.lmdb_utils import lmdb_get, lmdb_open, lmdb_read_metadata
+from mattergen.evaluation.utils.lmdb_utils import lmdb_get, lmdb_open, lmdb_put, lmdb_read_metadata
 
 
 def gzip_compress(file_path: str | os.PathLike, output_dir: str | os.PathLike) -> Path:
@@ -42,24 +42,6 @@ def gzip_decompress(gzip_file_path: str | os.PathLike, output_dir: str | os.Path
 
 class LmdbNotFoundError(Exception):
     pass
-
-
-def lmdb_put(txn: lmdb.Transaction, key: str, value: Any) -> bool:
-    """
-    Stores a record in a database.
-
-    Args:
-        txn: LMDB transaction (use env.begin())
-        key: key of the data to be stored.
-        value: value of the data to be stored (needs to be picklable).
-
-    Returns:
-        True if it was written.
-    """
-    return txn.put(
-        key.encode("ascii"),
-        pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL),
-    )
 
 
 class LMDBGZSerializer():
