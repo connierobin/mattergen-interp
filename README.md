@@ -144,6 +144,36 @@ This script will try to read structures from disk in the following precedence or
 * If `$RESULTS_PATH` points to a directory, it will read all `.cif`,  `.xyz`, or `.extxyz` files in the order they occur in `os.listdir`.
 
 Here, we expect `energies.npy` to be a numpy array with the entries being `float` energies in the same order as the structures read from `$RESULTS_PATH`.
+
+If you want to use your own custom dataset for evaluation, you first need to serialize and save it by doing so:
+
+``` python
+from mattergen.evaluation.reference.reference_dataset import ReferenceDataset
+from mattergen.evaluation.reference.reference_dataset_serializer import LMDBGZSerializer
+
+
+reference_dataset = ReferenceDataset.from_entries(name="my_reference_dataset", entries=entries)
+LMDBGZSerializer().serialize(reference_dataset, "path_to_file.gz")
+```
+
+where `entries` is a list of `pymatgen.entries.computed_entries.ComputedStructureEntry` objects containing structure-energy pairs for each structure.
+
+By default, we apply the MaterialsProject2020Compatibility energy correction scheme to all input structures during evaluation, and assume that the reference dataset 
+has already been pre-processed using the same compatibility scheme. Therefore, unless you have already done this, you should obtain the `entries` object for
+your custom reference dataset in the following way:
+
+``` python
+from mattergen.evaluation.utils.vasprunlike import VasprunLike
+from pymatgen.entries.compatibility import MaterialsProject2020Compatibility
+
+entries = []
+for structure, energy in zip(structures, energies)
+  vasprun_like = VasprunLike(structure=structure, energy=energy)
+  entries.append(vasprun_like.get_computed_entry(
+      inc_structure=True, energy_correction_scheme=MaterialsProject2020Compatibility()
+  ))
+```
+
 ## Train MatterGen yourself
 Before we can train MatterGen from scratch, we have to unpack and preprocess the dataset files.
 
