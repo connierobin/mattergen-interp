@@ -147,9 +147,8 @@ class DisorderedStructureMatcher(StructureMatcher):
             ):
                 return False
             # First do the simple comparison, and exit the loop only if a match is found
-            if get_sg(structure_1_nooxi) == get_sg(structure_2_nooxi):
-                if self.ordered_structurematcher.fit(structure_1_nooxi, structure_2_nooxi):
-                    return True
+            if self.ordered_structurematcher.fit(structure_1_nooxi, structure_2_nooxi):
+                return True
 
             # Then disorder one of the structures and compare again using the disordered matcher
             structure_1_nooxi, can_be_disordered_1 = try_make_structure_disordered(
