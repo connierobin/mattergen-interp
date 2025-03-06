@@ -4,7 +4,6 @@
 from itertools import combinations
 
 import numpy as np
-from emmet.core.utils import get_sg
 from pymatgen.analysis.structure_matcher import (
     AbstractComparator,
     OrderDisorderElementComparator,
