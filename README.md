@@ -145,6 +145,10 @@ This script will try to read structures from disk in the following precedence or
 
 Here, we expect `energies.npy` to be a numpy array with the entries being `float` energies in the same order as the structures read from `$RESULTS_PATH`.
 
+If you want to save the relaxed structures, toghether with their energies, forces, and stresses, add `--structures_output_path=YOUR_PATH` to the script call, like so:
+```bash
+mattergen-evaluate --structures_path=$RESULTS_PATH --energies_path='energies.npy' --relax=False --structure_matcher='disordered' --save_as='metrics' --structures_output_path="relaxed_structures.extxyz"
+```
 ### Evaluate using your own reference dataset
 
 > [!IMPORTANT]
