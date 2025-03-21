@@ -25,6 +25,7 @@ def evaluate(
     save_as: str | None = None,
     potential_load_path: str | None = None,
     device: str = str(get_device()),
+    structures_output_path: str | None = None,
 ) -> dict[str, float | int]:
     """Evaluate the structures against a reference dataset.
 
@@ -37,6 +38,7 @@ def evaluate(
         save_as: Save the metrics as a JSON file.
         potential_load_path: Path to the Machine Learning potential to use for relaxation.
         device: Device to use for relaxation.
+        structures_output_path: Path to save the relaxed structures.
 
     Returns:
         metrics: a dictionary of metrics and their values.
@@ -45,7 +47,7 @@ def evaluate(
         raise ValueError("Cannot accept energies if relax is True.")
     if relax:
         relaxed_structures, energies = relax_structures(
-            structures, device=device, load_path=potential_load_path
+            structures, device=device, potential_load_path=potential_load_path, output_path=structures_output_path
         )
     else:
         relaxed_structures = structures
