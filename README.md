@@ -328,11 +328,5 @@ Any use of third-party trademarks or logos are subject to those third-party's po
 
 The responsible AI transparency documentation can be found [here](MODEL_CARD.md).
 
-
 ## Get in touch
-
-If you have any questions not covered here, please create an issue or contact the
-Materials Design team at [ai4s-materials@microsoft.com](mailto:ai4s-materials@microsoft.com).
-
-We would appreciate your feedback and would like to know how MatterGen has been beneficial to your research.
-Please share your experiences with us at [ai4s-materials@microsoft.com](mailto:ai4s-materials@microsoft.com).
+If you have any questions not covered here, please create an issue using the appropriate issue template.
