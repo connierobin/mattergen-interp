@@ -1,0 +1,6 @@
+{
+  "batch_size": 32,
+  "num_batches": 100,
+  "record_trajectories": true,
+  "save_chemgraphs": true
+}
