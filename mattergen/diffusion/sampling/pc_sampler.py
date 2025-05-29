@@ -99,7 +99,9 @@ class PredictorCorrector(Generic[Diffusable]):
 
     @torch.no_grad()
     def sample(
-        self, conditioning_data: BatchedData, mask: Mapping[str, torch.Tensor] | None = None
+        self, conditioning_data: BatchedData, mask: Mapping[str, torch.Tensor] | None = None,
+        *, time_config: dict[str, float | int] | None = None,
+        start_structure: BatchedData | None = None
     ) -> SampleAndMean:
         """Create one sample for each of a batch of conditions.
         Args:
@@ -107,15 +109,25 @@ class PredictorCorrector(Generic[Diffusable]):
                because the sampler uses these to determine the shapes of things to generate.
             mask: for inpainting. Keys should be a subset of the keys in `data`. 1 indicates data that should be fixed, 0 indicates data that should be replaced with sampled values.
                 Shapes of values in `mask` must match the shapes of values in `conditioning_data`.
+            time_config: Optional dictionary containing time parameters:
+                - start_t: Starting time for diffusion
+                - eps_t: Ending time for diffusion
+                - N: Number of steps
+                - dt: (Optional) Time step size
+                If not provided, uses default time parameters from T to eps_t
+            start_structure: Optional starting structure. If provided, starts diffusion from this structure.
+                If not provided, samples from prior.
         Returns:
            (batch, mean_batch). The difference between these is that `mean_batch` has no noise added at the final denoising step.
 
         """
-        return self._sample_maybe_record(conditioning_data, mask=mask, record=False)[:2]
+        return self._sample_maybe_record(conditioning_data, mask=mask, record=False, time_config=time_config, start_structure=start_structure)[:2]
 
     @torch.no_grad()
     def sample_with_record(
-        self, conditioning_data: BatchedData, mask: Mapping[str, torch.Tensor] | None = None
+        self, conditioning_data: BatchedData, mask: Mapping[str, torch.Tensor] | None = None,
+        *, time_config: dict[str, float | int] | None = None,
+        start_structure: BatchedData | None = None
     ) -> SampleAndMeanAndRecords:
         """Create one sample for each of a batch of conditions.
         Args:
@@ -123,11 +135,19 @@ class PredictorCorrector(Generic[Diffusable]):
                because the sampler uses these to determine the shapes of things to generate.
             mask: for inpainting. Keys should be a subset of the keys in `data`. 1 indicates data that should be fixed, 0 indicates data that should be replaced with sampled values.
                 Shapes of values in `mask` must match the shapes of values in `conditioning_data`.
+            time_config: Optional dictionary containing time parameters:
+                - start_t: Starting time for diffusion
+                - eps_t: Ending time for diffusion
+                - N: Number of steps
+                - dt: (Optional) Time step size
+                If not provided, uses default time parameters from T to eps_t
+            start_structure: Optional starting structure. If provided, starts diffusion from this structure.
+                If not provided, samples from prior.
         Returns:
            (batch, mean_batch). The difference between these is that `mean_batch` has no noise added at the final denoising step.
 
         """
-        return self._sample_maybe_record(conditioning_data, mask=mask, record=True)
+        return self._sample_maybe_record(conditioning_data, mask=mask, record=True, time_config=time_config, start_structure=start_structure)
 
     @torch.no_grad()
     def _sample_maybe_record(
@@ -135,26 +155,76 @@ class PredictorCorrector(Generic[Diffusable]):
         conditioning_data: BatchedData,
         mask: Mapping[str, torch.Tensor] | None = None,
         record: bool = False,
+        *,  # Force remaining args to be keyword-only
+        time_config: dict[str, float | int] | None = None,
+        start_structure: BatchedData | None = None,
     ) -> SampleAndMeanAndMaybeRecords:
-        """Create one sample for each of a batch of conditions.
-        Args:
-            conditioning_data: batched conditioning data. Even if you think you don't want conditioning, you still need to pass a batch of conditions
-               because the sampler uses these to determine the shapes of things to generate.
-            mask: for inpainting. Keys should be a subset of the keys in `data`. 1 indicates data that should be fixed, 0 indicates data that should be replaced with sampled values.
-                Shapes of values in `mask` must match the shapes of values in `conditioning_data`.
-        Returns:
-           (batch, mean_batch, recorded_samples, recorded_predictions).
-           The difference between the former two is that `mean_batch` has no noise added at the final denoising step.
-           The latter two are only returned if `record` is True, and contain the samples and predictions from each step of the diffusion process.
-
-        """
+        """Create one sample for each of a batch of conditions."""
         if isinstance(self._diffusion_module, torch.nn.Module):
             self._diffusion_module.eval()
         mask = mask or {}
         conditioning_data = conditioning_data.to(self._device)
         mask = {k: v.to(self._device) for k, v in mask.items()}
+        
+        # # If we have a start_structure, ensure it matches the shape of a prior sample
+        # if start_structure is not None:
+        #     print("\nDebug: Start structure provided")
+        #     print("Start structure type:", type(start_structure))
+        #     print("Start structure fields:")
+        #     for key in start_structure.keys():
+        #         if isinstance(start_structure[key], torch.Tensor):
+        #             print(f"{key}:", start_structure[key].shape, start_structure[key].dtype)
+        #             print(f"Values: {start_structure[key]}")
+        #         else:
+        #             print(f"{key}: (not a tensor)", type(start_structure[key]))
+            
+        #     # First get a prior sample to use as a template
+        #     template = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
+            
+        #     print("\nDebug: Template from prior")
+        #     print("Template type:", type(template))
+        #     print("Template fields before update:")
+        #     for key in template.keys():
+        #         if isinstance(template[key], torch.Tensor):
+        #             print(f"{key}:", template[key].shape, template[key].dtype)
+        #             print(f"Values: {template[key]}")
+        #         else:
+        #             print(f"{key}: (not a tensor)", type(template[key]))
+            
+        #     # Update the template with our start_structure's values while preserving the object structure
+        #     template = template.replace(
+        #         pos=start_structure.pos,
+        #         cell=start_structure.cell,
+        #         atomic_numbers=start_structure.atomic_numbers,
+        #         num_atoms=start_structure.num_atoms
+        #     )
+            
+        #     print("\nDebug: Template after update")
+        #     print("Template fields after update:")
+        #     for key in template.keys():
+        #         if isinstance(template[key], torch.Tensor):
+        #             print(f"{key}:", template[key].shape, template[key].dtype)
+        #             print(f"Values: {template[key]}")
+        #         else:
+        #             print(f"{key}: (not a tensor)", type(template[key]))
+            
+        #     batch = template.to(self._device)
+        # else:
+        #     batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
+
         batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
-        return self._denoise(batch=batch, mask=mask, record=record)
+        
+        # Use new denoising function if time_config is provided
+        if time_config is not None:
+            return self._denoise_from_start_t(
+                batch=batch,
+                mask=mask,
+                record=record,
+                time_config=time_config
+            )
+            # return self._denoise(batch=batch, mask=mask, record=record)
+        else:
+            return self._denoise(batch=batch, mask=mask, record=record)
 
     @torch.no_grad()
     def _denoise(
@@ -179,9 +249,123 @@ class PredictorCorrector(Generic[Diffusable]):
 
         for i in tqdm(range(self.N), miniters=50, mininterval=5):
             # Set the timestep
+            print(f"i: {i}")
+            print(f"timesteps[i]: {timesteps[i]}")
+            print(f"type of timesteps[i]: {type(timesteps[i])}")
+            print(f"type of timesteps: {type(timesteps)}")
             t = torch.full((batch.get_batch_size(),), timesteps[i], device=self._device)
 
             # Corrector updates.
+            if self._correctors:
+                for _ in range(self._n_steps_corrector):
+                    score = self._score_fn(batch, t)
+                    fns = {
+                        k: corrector.step_given_score for k, corrector in self._correctors.items()
+                    }
+                    samples_means: dict[str, Tuple[torch.Tensor, torch.Tensor]] = apply(
+                        fns=fns,
+                        broadcast={"t": t, "dt": dt},
+                        x=batch,
+                        score=score,
+                        batch_idx=self._multi_corruption._get_batch_indices(batch),
+                    )
+                    if record:
+                        recorded_samples.append(batch.clone().to("cpu"))
+                    batch, mean_batch = _mask_replace(
+                        samples_means=samples_means, batch=batch, mean_batch=mean_batch, mask=mask
+                    )
+
+            # Predictor updates
+            score = self._score_fn(batch, t)
+            predictor_fns = {
+                k: predictor.update_given_score for k, predictor in self._predictors.items()
+            }
+            samples_means = apply(
+                fns=predictor_fns,
+                x=batch,
+                score=score,
+                broadcast=dict(t=t, batch=batch, dt=dt),
+                batch_idx=self._multi_corruption._get_batch_indices(batch),
+            )
+            if record:
+                recorded_samples.append(batch.clone().to("cpu"))
+            batch, mean_batch = _mask_replace(
+                samples_means=samples_means, batch=batch, mean_batch=mean_batch, mask=mask
+            )
+
+        return batch, mean_batch, recorded_samples
+
+    @torch.no_grad()
+    def _denoise_from_start_t(
+        self,
+        batch: Diffusable,
+        mask: dict[str, torch.Tensor],
+        record: bool = False,
+        *,  # Force remaining args to be keyword-only
+        time_config: dict[str, float | int],
+    ) -> SampleAndMeanAndMaybeRecords:
+        """Denoise from a specific start_t to eps_t using provided time configuration.
+        
+        Args:
+            batch: The batch to denoise
+            mask: Mask for inpainting
+            record: Whether to record intermediate states
+            time_config: Dictionary containing:
+                - start_t: Starting time for diffusion
+                - eps_t: Ending time for diffusion
+                - N: Number of steps
+                - dt: (Optional) Time step size. If not provided, calculated as (start_t - eps_t) / (N - 1)
+        """
+        recorded_samples = None
+        if record:
+            recorded_samples = []
+            
+        # Setup masks
+        for k in self._predictors:
+            mask.setdefault(k, None)
+        for k in self._correctors:
+            mask.setdefault(k, None)
+        mean_batch = batch.clone()
+
+        # Extract time parameters
+        start_t = float(time_config['start_t'])
+        eps_t = float(time_config['eps_t'])
+        N = int(time_config['N'])
+        dt = float(time_config.get('dt', -(start_t - eps_t) / (N - 1)))
+        dt = torch.tensor(dt).to(self._device)
+
+        print(f"start_t: {start_t}")
+        print(f"eps_t: {eps_t}")
+        print(f"N: {N}")
+        print(f"dt: {dt}")
+        
+        # Create timesteps from start_t to eps_t
+        timesteps = torch.linspace(start_t, eps_t, N, device=self._device)
+        print(f"dt: {dt}")
+
+        for i in range(10):
+            print(f"i: {i}")
+            print(f"timesteps[i]: {timesteps[i]}")
+            print(f"type of timesteps[i]: {type(timesteps[i])}")
+            print(f"type of timesteps: {type(timesteps)}")
+
+        # # Decreasing timesteps from T to eps_t
+        # timesteps = torch.linspace(self._max_t, self._eps_t, self.N, device=self._device)
+        # dt = -torch.tensor((self._max_t - self._eps_t) / (self.N - 1)).to(self._device)
+        # print(f"dt: {dt}")
+
+        # for i in range(10):
+        #     print(f"i: {i}")
+        #     print(f"timesteps[i]: {timesteps[i]}")
+        #     print(f"type of timesteps[i]: {type(timesteps[i])}")
+        #     print(f"type of timesteps: {type(timesteps)}")
+
+        # Decreasing timesteps from start_t to eps_t
+        for i in tqdm(range(N), miniters=50, mininterval=5):
+            # Set the timestep
+            t = torch.full((batch.get_batch_size(),), timesteps[i], device=self._device)
+
+            # Corrector updates
             if self._correctors:
                 for _ in range(self._n_steps_corrector):
                     score = self._score_fn(batch, t)

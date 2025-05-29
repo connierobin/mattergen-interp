@@ -21,6 +21,7 @@ from mattergen.common.data.collate import collate
 from mattergen.common.data.condition_factory import ConditionLoader
 from mattergen.common.data.num_atoms_distribution import NUM_ATOMS_DISTRIBUTIONS
 from mattergen.common.data.types import TargetProperty
+from mattergen.diffusion.data.batched_data import BatchedData
 from mattergen.common.utils.data_utils import lattice_matrix_to_params_torch
 from mattergen.common.utils.eval_utils import (
     MatterGenCheckpointInfo,
@@ -41,6 +42,9 @@ def draw_samples_from_sampler(
     output_path: Path | None = None,
     cfg: DictConfig | None = None,
     record_trajectories: bool = True,
+    *,  # Force remaining args to be keyword-only
+    time_config: dict[str, float | int] | None = None,
+    start_structure: BatchedData | None = None,
 ) -> list[Structure]:
 
     # Dict
@@ -55,10 +59,20 @@ def draw_samples_from_sampler(
 
         # generate samples
         if record_trajectories:
-            sample, mean, intermediate_samples = sampler.sample_with_record(conditioning_data, mask)
+            sample, mean, intermediate_samples = sampler.sample_with_record(
+                conditioning_data, 
+                mask,
+                time_config=time_config,
+                start_structure=start_structure
+            )
             all_trajs_list.extend(list_of_time_steps_to_list_of_trajectories(intermediate_samples))
         else:
-            sample, mean = sampler.sample(conditioning_data, mask)
+            sample, mean = sampler.sample(
+                conditioning_data, 
+                mask,
+                time_config=time_config,
+                start_structure=start_structure
+            )
         all_samples_list.extend(mean.to_data_list())
     all_samples = collate(all_samples_list)
     assert isinstance(all_samples, ChemGraph)
@@ -342,6 +356,9 @@ class CrystalGenerator:
         num_batches: int | None = None,
         target_compositions_dict: list[dict[str, float]] | None = None,
         output_dir: str = "outputs",
+        *,  # Force remaining args to be keyword-only
+        time_config: dict[str, float | int] | None = None,
+        start_structure: BatchedData | None = None,
     ) -> list[Structure]:
         # Prioritize the runtime provided batch_size, num_batches and target_compositions_dict
         batch_size = batch_size or self.batch_size
@@ -374,6 +391,8 @@ class CrystalGenerator:
             output_path=Path(output_dir),
             properties_to_condition_on=self.properties_to_condition_on,
             record_trajectories=self.record_trajectories,
+            time_config=time_config,
+            start_structure=start_structure
         )
 
         return generated_structures
