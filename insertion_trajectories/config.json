@@ -1,0 +1,11 @@
+{
+  "input_dir": "generated_structures",
+  "num_trajectories": 1,
+  "step_interval": 200,
+  "seed": 42,
+  "batch_size": 32,
+  "num_batches": 1,
+  "record_trajectories": true,
+  "test_mode": true,
+  "dt": 0.001
+}

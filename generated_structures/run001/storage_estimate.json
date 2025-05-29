@@ -1,0 +1,8 @@
+{
+  "estimated_mb_per_trajectory": 0.60272216796875,
+  "total_estimated_mb": 1928.7109375,
+  "assumptions": {
+    "average_atoms_per_structure": 20,
+    "steps_per_trajectory": 1000
+  }
+}
