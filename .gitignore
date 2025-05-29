@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 jobs/
+*.zip
+*.extxyz
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
