@@ -52,42 +52,13 @@ def load_final_structures(output_dir: Path) -> List[Structure]:
                 if filename.endswith('.cif'):
                     with zf.open(filename) as f:
                         struct = Structure.from_str(f.read().decode(), fmt="cif")
-                        print("\nStructure from CIF - Species Info:")
-                        for site in struct:
-                            specie = site.specie
-                            if isinstance(specie, Element):
-                                print(f"Element: {specie.symbol}, Z: {specie.Z}")
-                            else:
-                                print(f"Species: {specie}, type: {type(specie)}")
                         structures.append(struct)
         return structures
     
     # Fall back to extxyz file
     xyz_file = output_dir / "generated_crystals.extxyz"
     if xyz_file.exists():
-        # First inspect the content
-        with open(xyz_file, 'r') as f:
-            content = f.read()
-            inspect_xyz_content(content)
-        
         atoms_list = ase.io.read(xyz_file, index=":")
-        
-        # Inspect the first structure's atomic number conversion
-        if atoms_list:
-            print("\nInspecting first structure's atomic numbers:")
-            unique_pairs = inspect_atomic_conversion(atoms_list[0])
-            
-            # Convert to pymatgen and check what happens
-            print("\nChecking conversion to pymatgen Structure:")
-            struct = AseAtomsAdaptor.get_structure(atoms_list[0])
-            print("After conversion to pymatgen Structure:")
-            for site in struct:
-                specie = site.specie
-                if isinstance(specie, Element):
-                    print(f"Element: {specie.symbol}, Z: {specie.Z}")
-                else:
-                    print(f"Species: {specie}, type: {type(specie)}")
-        
         structures = [AseAtomsAdaptor.get_structure(atoms) for atoms in atoms_list]
         return structures
     

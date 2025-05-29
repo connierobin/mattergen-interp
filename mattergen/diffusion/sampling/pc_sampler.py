@@ -165,52 +165,6 @@ class PredictorCorrector(Generic[Diffusable]):
         mask = mask or {}
         conditioning_data = conditioning_data.to(self._device)
         mask = {k: v.to(self._device) for k, v in mask.items()}
-        
-        # # If we have a start_structure, ensure it matches the shape of a prior sample
-        # if start_structure is not None:
-        #     print("\nDebug: Start structure provided")
-        #     print("Start structure type:", type(start_structure))
-        #     print("Start structure fields:")
-        #     for key in start_structure.keys():
-        #         if isinstance(start_structure[key], torch.Tensor):
-        #             print(f"{key}:", start_structure[key].shape, start_structure[key].dtype)
-        #             print(f"Values: {start_structure[key]}")
-        #         else:
-        #             print(f"{key}: (not a tensor)", type(start_structure[key]))
-            
-        #     # First get a prior sample to use as a template
-        #     template = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
-            
-        #     print("\nDebug: Template from prior")
-        #     print("Template type:", type(template))
-        #     print("Template fields before update:")
-        #     for key in template.keys():
-        #         if isinstance(template[key], torch.Tensor):
-        #             print(f"{key}:", template[key].shape, template[key].dtype)
-        #             print(f"Values: {template[key]}")
-        #         else:
-        #             print(f"{key}: (not a tensor)", type(template[key]))
-            
-        #     # Update the template with our start_structure's values while preserving the object structure
-        #     template = template.replace(
-        #         pos=start_structure.pos,
-        #         cell=start_structure.cell,
-        #         atomic_numbers=start_structure.atomic_numbers,
-        #         num_atoms=start_structure.num_atoms
-        #     )
-            
-        #     print("\nDebug: Template after update")
-        #     print("Template fields after update:")
-        #     for key in template.keys():
-        #         if isinstance(template[key], torch.Tensor):
-        #             print(f"{key}:", template[key].shape, template[key].dtype)
-        #             print(f"Values: {template[key]}")
-        #         else:
-        #             print(f"{key}: (not a tensor)", type(template[key]))
-            
-        #     batch = template.to(self._device)
-        # else:
-        #     batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
 
         batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
         
@@ -249,10 +203,6 @@ class PredictorCorrector(Generic[Diffusable]):
 
         for i in tqdm(range(self.N), miniters=50, mininterval=5):
             # Set the timestep
-            print(f"i: {i}")
-            print(f"timesteps[i]: {timesteps[i]}")
-            print(f"type of timesteps[i]: {type(timesteps[i])}")
-            print(f"type of timesteps: {type(timesteps)}")
             t = torch.full((batch.get_batch_size(),), timesteps[i], device=self._device)
 
             # Corrector updates.
@@ -333,32 +283,9 @@ class PredictorCorrector(Generic[Diffusable]):
         N = int(time_config['N'])
         dt = float(time_config.get('dt', -(start_t - eps_t) / (N - 1)))
         dt = torch.tensor(dt).to(self._device)
-
-        print(f"start_t: {start_t}")
-        print(f"eps_t: {eps_t}")
-        print(f"N: {N}")
-        print(f"dt: {dt}")
         
         # Create timesteps from start_t to eps_t
         timesteps = torch.linspace(start_t, eps_t, N, device=self._device)
-        print(f"dt: {dt}")
-
-        for i in range(10):
-            print(f"i: {i}")
-            print(f"timesteps[i]: {timesteps[i]}")
-            print(f"type of timesteps[i]: {type(timesteps[i])}")
-            print(f"type of timesteps: {type(timesteps)}")
-
-        # # Decreasing timesteps from T to eps_t
-        # timesteps = torch.linspace(self._max_t, self._eps_t, self.N, device=self._device)
-        # dt = -torch.tensor((self._max_t - self._eps_t) / (self.N - 1)).to(self._device)
-        # print(f"dt: {dt}")
-
-        # for i in range(10):
-        #     print(f"i: {i}")
-        #     print(f"timesteps[i]: {timesteps[i]}")
-        #     print(f"type of timesteps[i]: {type(timesteps[i])}")
-        #     print(f"type of timesteps: {type(timesteps)}")
 
         # Decreasing timesteps from start_t to eps_t
         for i in tqdm(range(N), miniters=50, mininterval=5):
