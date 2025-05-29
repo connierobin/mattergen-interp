@@ -11,6 +11,7 @@
 *.sln.docstates
 mattergen.egg-info/
 jobs/
+scripts_ignore/
 *.zip
 *.extxyz
 
