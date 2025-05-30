@@ -12,6 +12,7 @@
 mattergen.egg-info/
 jobs/
 scripts_ignore/
+generated_structures/
 *.zip
 *.extxyz
 
