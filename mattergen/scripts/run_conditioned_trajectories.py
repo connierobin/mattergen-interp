@@ -196,11 +196,31 @@ def generate_conditioned_crystals(
             json.dump(strategy_config, f, indent=2)
         
         try:
-            # Create checkpoint info for local model
-            checkpoint_info = MatterGenCheckpointInfo(
-                model_path=Path(strategy["checkpoint_path"]).resolve(),
-                load_epoch="last"
-            )
+            # Use Hugging Face Hub models instead of local checkpoints
+            model_name_mapping = {
+                "checkpoints/mattergen_base": "mattergen_base",
+                "checkpoints/chemical_system": "chemical_system", 
+                "checkpoints/space_group": "space_group",
+                "checkpoints/chemical_system_energy_above_hull": "chemical_system_energy_above_hull",
+                "checkpoints/dft_mag_density": "dft_mag_density",
+                "checkpoints/dft_band_gap": "dft_band_gap",
+                "checkpoints/ml_bulk_modulus": "ml_bulk_modulus",
+                "checkpoints/dft_mag_density_hhi_score": "dft_mag_density_hhi_score",
+            }
+            
+            checkpoint_path = strategy["checkpoint_path"]
+            if checkpoint_path in model_name_mapping:
+                # Use Hugging Face Hub
+                hf_model_name = model_name_mapping[checkpoint_path]
+                checkpoint_info = MatterGenCheckpointInfo.from_hf_hub(hf_model_name)
+                print(f"Using Hugging Face model: {hf_model_name}")
+            else:
+                # Fallback to local path (will likely fail)
+                checkpoint_info = MatterGenCheckpointInfo(
+                    model_path=str(Path(checkpoint_path).resolve()),
+                    load_epoch="last"
+                )
+                print(f"Using local checkpoint: {checkpoint_path}")
             
             # Initialize generator
             generator = CrystalGenerator(
