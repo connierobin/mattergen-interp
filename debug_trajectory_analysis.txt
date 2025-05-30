@@ -1,0 +1,149 @@
+============================================================
+DEBUG: Late Insertion Trajectory Starting Point Verification
+============================================================
+
+Loading structures...
+✓ Loaded original trajectory at timestep 800
+✓ Loaded saved starting structure
+✓ Loaded first structure from late insertion trajectory
+
+============================================================
+STRUCTURE COMPARISON: Original @ timestep 800 vs Saved starting structure
+============================================================
+
+Original @ timestep 800:
+  Composition: Rb3 F6 Tm1
+  Formula: Rb3 Tm1 F6
+  Volume: 219.540991
+  Density: 4.079308
+  Num atoms: 10
+
+Saved starting structure:
+  Composition: Rb3 F6 Tm1
+  Formula: Rb3 Tm1 F6
+  Volume: 219.540985
+  Density: 4.079308
+  Num atoms: 10
+
+Lattice Parameters:
+  Original @ timestep 800: a=7.384988, b=5.767678, c=6.018784
+            α=96.674122, β=100.728480, γ=116.505977
+  Saved starting structure: a=7.384988, b=5.767677, c=6.018784
+            α=96.674122, β=100.728480, γ=116.505978
+
+Differences:
+  Composition match: True
+  Volume difference: 0.00000612
+  Density difference: 0.00000011
+
+  Lattice parameter differences:
+    a: 0.00000000
+    b: 0.00000010
+    c: 0.00000000
+    α: 0.00000012
+    β: 0.00000000
+    γ: 0.00000092
+  Max lattice difference: 0.00000092
+
+Atomic positions:
+  Max coordinate difference: 0.00000003
+  Avg coordinate difference: 0.00000001
+
+  Structures identical (tolerance 1e-06): True
+
+============================================================
+STRUCTURE COMPARISON: Saved starting structure vs Late insertion first step
+============================================================
+
+Saved starting structure:
+  Composition: Rb3 F6 Tm1
+  Formula: Rb3 Tm1 F6
+  Volume: 219.540985
+  Density: 4.079308
+  Num atoms: 10
+
+Late insertion first step:
+  Composition: Md10
+  Formula: Md10
+  Volume: 228.743383
+  Density: 18.729245
+  Num atoms: 10
+
+Lattice Parameters:
+  Saved starting structure: a=7.384988, b=5.767677, c=6.018784
+            α=96.674122, β=100.728480, γ=116.505978
+  Late insertion first step: a=7.930788, b=4.819891, c=6.913451
+            α=87.113237, β=109.765053, γ=69.555768
+
+Differences:
+  Composition match: False
+  Volume difference: 9.20239734
+  Density difference: 14.64993691
+
+  Lattice parameter differences:
+    a: 0.54580028
+    b: 0.94778607
+    c: 0.89466763
+    α: 9.56088535
+    β: 9.03657277
+    γ: 46.95020988
+  Max lattice difference: 46.95020988
+
+============================================================
+STRUCTURE COMPARISON: Original @ timestep 800 vs Late insertion first step
+============================================================
+
+Original @ timestep 800:
+  Composition: Rb3 F6 Tm1
+  Formula: Rb3 Tm1 F6
+  Volume: 219.540991
+  Density: 4.079308
+  Num atoms: 10
+
+Late insertion first step:
+  Composition: Md10
+  Formula: Md10
+  Volume: 228.743383
+  Density: 18.729245
+  Num atoms: 10
+
+Lattice Parameters:
+  Original @ timestep 800: a=7.384988, b=5.767678, c=6.018784
+            α=96.674122, β=100.728480, γ=116.505977
+  Late insertion first step: a=7.930788, b=4.819891, c=6.913451
+            α=87.113237, β=109.765053, γ=69.555768
+
+Differences:
+  Composition match: False
+  Volume difference: 9.20239123
+  Density difference: 14.64993703
+
+  Lattice parameter differences:
+    a: 0.54580028
+    b: 0.94778617
+    c: 0.89466763
+    α: 9.56088523
+    β: 9.03657277
+    γ: 46.95020896
+  Max lattice difference: 46.95020896
+
+============================================================
+SUMMARY
+============================================================
+
+1. Original vs Saved Starting Structure:
+   Identical: True
+   Max difference: 0.00000092
+
+2. Saved Starting vs Late Insertion First:
+   Identical: False
+   Max difference: 46.95020988
+
+3. Original vs Late Insertion First (KEY TEST):
+   Identical: False
+   Max difference: 46.95020896
+
+❌ FAILURE: Late insertion trajectory does NOT start from the correct point!
+   There may still be a bug in the loading logic.
+
+============================================================
