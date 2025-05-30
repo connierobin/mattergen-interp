@@ -367,18 +367,12 @@ class CrystalGenerator:
         assert batch_size is not None
         assert num_batches is not None
 
-        # print config for debugging and reproducibility
-        print("\nModel config:")
-        print(OmegaConf.to_yaml(self.cfg, resolve=True))
-
         sampling_config = self.load_sampling_config(
             batch_size=batch_size,
             num_batches=num_batches,
             target_compositions_dict=target_compositions_dict,
         )
 
-        print("\nSampling config:")
-        print(OmegaConf.to_yaml(sampling_config, resolve=True))
         condition_loader = self.get_condition_loader(sampling_config, target_compositions_dict)
 
         sampler_partial = instantiate(sampling_config.sampler_partial)
