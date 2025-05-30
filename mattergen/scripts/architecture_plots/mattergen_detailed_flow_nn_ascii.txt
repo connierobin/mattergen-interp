@@ -1,0 +1,246 @@
+================================================================================
+          MATTERGEN: DETAILED INFORMATION FLOW WITH NEURAL NETWORK SPECIFICATIONS
+================================================================================
+
+INPUT PHASE:
+┌───────────────────────┐    ┌────────────────────────┐    ┌─────────────────────────┐
+│   Conditioning Data   │───▶│    Prior Sampling      │───▶│  Initial Noisy Tensors  │
+│                       │    │                        │    │                         │
+│ num_atoms: [B]        │    │ corruption.prior_      │    │ pos: [N_total, 3]      │
+│ chemical_system:      │    │ sampling()             │    │ cell: [B, 3, 3]        │
+│ [B, 119]              │    │                        │    │ atomic_numbers:         │
+│ properties: [B, 1]    │    │ Continuous: N(0,1)     │    │ [N_total]               │
+│                       │    │ Discrete: Uniform      │    │                         │
+└───────────────────────┘    └────────────────────────┘    └─────────────────────────┘
+
+PROPERTY EMBEDDINGS:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PROPERTY EMBEDDING NETWORKS                       │
+│                                                                             │
+│ Chemical System:                    Numeric Properties:                     │
+│ ┌─────────────────────┐            ┌─────────────────────────────────────┐   │
+│ │ Embedding(119, 512) │            │ NoiseLevelEncoding(512)             │   │
+│ │ 61,928 parameters   │            │ Sinusoidal pos encoding            │   │
+│ │ Multi-hot input     │            │ No learnable params                 │   │
+│ └─────────────────────┘            └─────────────────────────────────────┘   │
+│                                                                             │
+│ Space Group:                        All outputs: [B, 512]                  │
+│ ┌─────────────────────┐                                                     │
+│ │ Embedding(230, 512) │                                                     │
+│ │ 117,760 parameters  │                                                     │
+│ └─────────────────────┘                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DENOISING LOOP: for t in [T_max, T_max-dt, ..., ε] (typically 1000 steps)
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                        SINGLE DENOISING STEP WITH NN DETAILS                 ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+TIME ENCODING:
+┌─────────────────────────────────────────┐
+│         Time Encoding Network           │
+│                                         │
+│ Input: t: [B]                          │
+│ ┌─────────────────────────────────────┐ │
+│ │ Sinusoidal Positional Encoding     │ │
+│ │ div_term = exp(arange(0,512,2) *    │ │
+│ │            (-log(10000)/512))       │ │
+│ │ x[0::2] = sin(t * div_term)         │ │
+│ │ x[1::2] = cos(t * div_term)         │ │
+│ │ Parameters: 0 (non-parametric)      │ │
+│ └─────────────────────────────────────┘ │
+│ Output: t_enc: [B, 512]                │
+│                                         │
+│ Concatenate with property embeddings:   │
+│ z_global: [B, 512 * (1 + num_props)]  │
+└─────────────────────────────────────────┘
+
+GEMNET-T NEURAL NETWORK ARCHITECTURE:
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Graph           │───▶│   Graph         │───▶│ Atom Embedding  │───▶│ Edge Embedding  │
+│ Construction    │    │   Tensors       │    │ Network         │    │ Network         │
+│                 │    │                 │    │                 │    │                 │
+│ Non-parametric  │    │ edge_index:     │    │ ┌─────────────┐ │    │ ┌─────────────┐ │
+│ operations:     │    │ [2, E]          │    │ │Embed(119,   │ │    │ │Linear(1152, │ │
+│                 │    │ distances: [E]  │    │ │512)         │ │    │ │512)         │ │
+│ • frac_to_cart_ │    │ unit_vectors:   │    │ │61K params   │ │    │ │590K params  │ │
+│   coords()      │    │ [E, 3]          │    │ └─────────────┘ │    │ └─────────────┘ │
+│ • generate_     │    │ triplet_indices:│    │ +               │    │                 │
+│   interaction_  │    │ [T, 3]          │    │ ┌─────────────┐ │    │ Input:          │
+│   graph()       │    │                 │    │ │Global z:    │ │    │ 2*atom_feat +   │
+│ • cutoff: 7.0 Å │    │ RBF features:   │    │ │[N,512*P]    │ │    │ edge_feat =     │
+│ • max_neigh: 50 │    │ [E, 128]        │    │ │from t_enc+  │ │    │ 2*512 + 128 =   │
+│ • max_images:   │    │ CBF features:   │    │ │prop_embed   │ │    │ 1152            │
+│   5³            │    │ [T, 16]         │    │ └─────────────┘ │    │                 │
+│                 │    │                 │    │ ┌─────────────┐ │    │ Output:         │
+│ Periodic        │    │ Spherical harm: │    │ │Linear(1024, │ │    │ [E, 512]        │
+│ boundaries      │    │ [T, num_sph]    │    │ │512)         │ │    │                 │
+│ handled         │    │ num_sph ≤ 7     │    │ │524K params  │ │    │                 │
+│                 │    │                 │    │ └─────────────┘ │    │                 │
+│                 │    │ E ≈ 50×N        │    │ Output:         │    │                 │
+│                 │    │ T ≈ 200×N       │    │ h: [N, 512]     │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                       │                         │
+                                                       ▼                         ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Output        │◄───│  4× Interaction │◄───│  Message        │◄───│   Initialize    │
+│   Heads         │    │  Blocks         │    │  Passing        │    │   Messages      │
+│                 │    │                 │    │                 │    │                 │
+│ ┌─────────────┐ │    │ Block structure:│    │ For each block: │    │ m_init = edge_  │
+│ │Energy Head: │ │    │ ┌─────────────┐ │    │                 │    │ embedding(h,    │
+│ │3 ResBlocks  │ │    │ │Triplet Int  │ │    │ 1. Triplet      │    │ rbf, idx_s,     │
+│ │each 512→512 │ │    │ │emb_size: 64 │ │    │    interactions│    │ idx_t)          │
+│ │~400K params │ │    │ └─────────────┘ │    │ 2. Edge updates │    │                 │
+│ └─────────────┘ │    │ ┌─────────────┐ │    │ 3. Node updates │    │ Uses RBF basis: │
+│ ┌─────────────┐ │    │ │Edge Updates │ │    │                 │    │ ┌─────────────┐ │
+│ │Force Head:  │ │    │ │Dense layers │ │    │ Key components: │    │ │128 Gaussian │ │
+│ │Direct from  │ │    │ │512→512      │ │    │ • Spherical     │    │ │basis funcs  │ │
+│ │node embs    │ │    │ └─────────────┘ │    │   harmonics     │    │ │cutoff: 7.0Å │ │
+│ │~200K params │ │    │ ┌─────────────┐ │    │ • Bilinear      │    │ │envelope:    │ │
+│ └─────────────┘ │    │ │Node Updates │ │    │   pooling       │    │ │polynomial   │ │
+│ ┌─────────────┐ │    │ │3 ResBlocks  │ │    │ • Residual      │    │ │degree 5     │ │
+│ │Stress Head: │ │    │ │each 512→512 │ │    │   connections   │    │ └─────────────┘ │
+│ │Lattice upd  │ │    │ └─────────────┘ │    │                 │    │                 │
+│ │~300K params │ │    │                 │    │ Params per      │    │ CBF for angles: │
+│ └─────────────┘ │    │ ~2-3M params    │    │ block:          │    │ ┌─────────────┐ │
+│                 │    │ per block       │    │ ~2-3M           │    │ │16 circular  │ │
+│ Total Output:   │    │                 │    │                 │    │ │basis funcs  │ │
+│ ~900K params    │    │ 4 blocks =      │    │ Total: 8-12M    │    │ │for triplets │ │
+│                 │    │ 8-12M total     │    │ parameters      │    │ └─────────────┘ │
+└─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
+
+NEURAL NETWORK OUTPUTS:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           GEMNET-T OUTPUT TENSORS                           │
+│                                                                             │
+│ Forces (Cartesian):           Stress (Lattice):         Atom Logits:       │
+│ ┌─────────────────────┐      ┌─────────────────────┐    ┌───────────────┐   │
+│ │ pred_forces:        │      │ pred_stress:        │    │ pred_atom:    │   │
+│ │ [N_total, 3]        │      │ [B, 3, 3]           │    │ [N_total,119] │   │
+│ │                     │      │                     │    │               │   │
+│ │ Units: eV/Å         │      │ Units: eV/Å³        │    │ Logits for    │   │
+│ │ Cartesian coords    │      │ Symmetric tensor    │    │ element types │   │
+│ │ Sum to zero per     │      │ Trace = pressure    │    │ Softmax       │   │
+│ │ structure           │      │                     │    │ applied later │   │
+│ └─────────────────────┘      └─────────────────────┘    └───────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+SCORE CONVERSION (Non-parametric operations):
+┌─────────────────────┐    ┌─────────────────────┐
+│  Score Conversion   │───▶│ Noise Predictions   │
+│                     │    │                     │
+│ Coordinate transform│    │ pos_score:          │
+│ Cartesian forces    │    │ [N_total, 3]        │
+│ to fractional       │    │                     │
+│ position scores:    │    │ cell_score:         │
+│                     │    │ [B, 3, 3]           │
+│ pos_score =         │    │                     │
+│ (cell⁻¹)ᵀ @         │    │ atom_score:         │
+│ pred_forces         │    │ [N_total, 119]      │
+│                     │    │                     │
+│ Element masking     │    │ All float32         │
+│ for atom types      │    │ Same dtype as       │
+│ based on chemical   │    │ input tensors       │
+│ system constraints  │    │                     │
+│                     │    │                     │
+│ No learnable        │    │                     │
+│ parameters          │    │                     │
+└─────────────────────┘    └─────────────────────┘
+
+PREDICTOR-CORRECTOR SAMPLING (Non-parametric):
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│  Corrector Steps    │───▶│  Predictor Step     │───▶│  Updated Tensors    │
+│                     │    │                     │    │                     │
+│ n_corrector iters   │    │ SDE-specific steps: │    │ pos: [N_total, 3]   │
+│ (typically 1)       │    │                     │    │ cell: [B, 3, 3]     │
+│                     │    │ Continuous vars:    │    │ atomic_numbers:     │
+│ Langevin MCMC:      │    │ dx = score*dt       │    │ [N_total]           │
+│ dx = score*dt +     │    │                     │    │                     │
+│ noise*sqrt(dt)      │    │ Discrete vars:      │    │ Less noisy than     │
+│                     │    │ D3PM transitions    │    │ previous iteration  │
+│ Different noise     │    │ based on learned    │    │                     │
+│ schedules for:      │    │ transition matrix   │    │ Gradually approach  │
+│ • Positions (VPSDE) │    │                     │    │ clean crystal       │
+│ • Lattice (VPSDE)   │    │ x_{t-dt} ← x_t+dx   │    │ structures          │
+│ • Atom types (D3PM) │    │                     │    │                     │
+│                     │    │ Adaptive dt based   │    │ Same tensor shapes, │
+│ No learnable        │    │ on timestep         │    │ refined values      │
+│ parameters          │    │                     │    │                     │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+                                                                 │
+                                                                 │
+            ┌────────────────────────────────────────────────────┘
+            │  LOOP BACK TO NEXT TIMESTEP t-dt
+            ▼  (unless t ≤ ε, then proceed to output)
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                           END OF DENOISING LOOP                              ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+FINAL OUTPUT CONVERSION (Non-parametric):
+┌─────────────────────┐    ┌─────────────────────┐
+│ Structure           │───▶│ Pymatgen            │
+│ Conversion          │    │ Structures          │
+│                     │    │                     │
+│ lattice_matrix_     │    │ List[Structure]     │
+│ to_params():        │    │                     │
+│ [B,3,3] → [B,6]     │    │ Lattice params:     │
+│ (a,b,c,α,β,γ)       │    │ (a,b,c,α,β,γ)       │
+│                     │    │                     │
+│ get_crystals_list():│    │ Fractional          │
+│ Split batched       │    │ coordinates         │
+│ tensors by          │    │                     │
+│ num_atoms per       │    │ Element symbols     │
+│ crystal             │    │                     │
+│                     │    │                     │
+│ make_structure():   │    │ Valid crystal       │
+│ Convert to          │    │ structures ready    │
+│ pymatgen objects    │    │ for analysis        │
+│                     │    │                     │
+│ No learnable        │    │                     │
+│ parameters          │    │                     │
+└─────────────────────┘    └─────────────────────┘
+
+================================================================================
+                           NEURAL NETWORK PARAMETER SUMMARY
+================================================================================
+
+GEMNET-T TOTAL PARAMETERS: ~15-20 MILLION
+
+BREAKDOWN BY COMPONENT:
+┌─────────────────────────┬─────────────────┬───────────────────────────────────┐
+│ Component               │ Parameters      │ Details                           │
+├─────────────────────────┼─────────────────┼───────────────────────────────────┤
+│ Atom Embedding          │ ~61K            │ Embedding(119, 512)               │
+│ Property Embeddings     │ ~60K each       │ Various embedding tables/nets     │
+│ Edge Embedding          │ ~590K           │ Linear(1152, 512)                │
+│ 4× Interaction Blocks   │ ~8-12M          │ 2-3M params each, main compute    │
+│ Output Heads (3)        │ ~900K           │ Energy/Force/Stress prediction    │
+│ Radial Basis Functions  │ ~500K           │ 128 Gaussian basis functions      │
+│ Time Encoding           │ 0               │ Sinusoidal (non-parametric)       │
+│ Graph Construction      │ 0               │ Geometric operations              │
+│ Score Conversion        │ 0               │ Coordinate transformations        │
+│ Predictor/Corrector     │ 0               │ SDE integration steps             │
+└─────────────────────────┴─────────────────┴───────────────────────────────────┘
+
+MEMORY AND COMPUTE CHARACTERISTICS:
+• Embedding dimension: 512 throughout (consistent sizing)
+• Batch processing: Variable-size graphs, N_total = sum(num_atoms)
+• Graph size: E ≈ 50×N edges, T ≈ 200×N triplets (depends on density)
+• Main compute: 4 interaction blocks with triplet-wise message passing
+• Inference: Single forward pass per diffusion timestep (1000 steps total)
+• Memory scaling: O(N + E + T) where N=atoms, E=edges, T=triplets
+
+KEY ARCHITECTURAL INSIGHTS:
+• Multi-scale: Handles 1-3 body interactions (bonds, angles)
+• Multi-modal: Joint embedding space for positions, lattice, atom types
+• Property conditioning: Flexible embedding concatenation system
+• Periodic boundaries: Native support in graph construction and GNN
+• Diffusion: Score-based denoising with different SDEs per modality
+
+PARAMETER EFFICIENCY:
+• Shared parameters across all crystal sizes
+• Adapter architecture allows property-specific fine-tuning
+• Most parameters in interaction blocks (core physics modeling)
+• Minimal parameters in I/O transformations (embeddings, heads)
+
+================================================================================

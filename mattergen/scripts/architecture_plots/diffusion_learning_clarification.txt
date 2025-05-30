@@ -1,0 +1,194 @@
+================================================================================
+                    MATTERGEN: DIFFUSION LEARNING VS SAMPLING CLARIFICATION
+================================================================================
+
+CRITICAL INSIGHT: Where Learning Actually Happens in Diffusion Models
+================================================================================
+
+LEARNED COMPONENTS (trained parameters):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           THE SCORE NETWORK (GEMNET-T)                     │
+│                                                                             │
+│ ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐   │
+│ │ Atom Embedding  │───▶│ Message Passing │───▶│ Output Heads            │   │
+│ │                 │    │                 │    │                         │   │
+│ │ LEARNED:        │    │ LEARNED:        │    │ LEARNED:                │   │
+│ │ • Embedding     │    │ • 4 Interaction │    │ • Energy prediction     │   │
+│ │   (119, 512)    │    │   blocks        │    │ • Force prediction      │   │
+│ │ • Property      │    │ • Edge updates  │    │ • Stress prediction     │   │
+│ │   embeddings    │    │ • Node updates  │    │ • Atom type logits      │   │
+│ │ • Time encoding │    │ • Triplet inter │    │                         │   │
+│ │   projection    │    │ • Residual conn │    │ Total: ~900K params     │   │
+│ │ Total: ~650K    │    │ Total: ~8-12M   │    │                         │   │
+│ │ parameters      │    │ parameters      │    │                         │   │
+│ └─────────────────┘    └─────────────────┘    └─────────────────────────┘   │
+│                                                                             │
+│ WHAT IT LEARNS: f(noisy_structure, timestep_t, properties) → noise/score   │
+│ TRAINING OBJECTIVE: Score matching loss                                     │
+│ TOTAL PARAMETERS: ~15-20M (entire network is diffusion model)              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+ALGORITHMIC COMPONENTS (no learnable parameters):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              SAMPLING PROCEDURES                            │
+│                                                                             │
+│ ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐   │
+│ │ Score           │───▶│ Predictor/      │───▶│ Tensor Updates          │   │
+│ │ Conversion      │    │ Corrector       │    │                         │   │
+│ │                 │    │                 │    │                         │   │
+│ │ ALGORITHMIC:    │    │ ALGORITHMIC:    │    │ ALGORITHMIC:            │   │
+│ │ • Coordinate    │    │ • Euler steps   │    │ • Apply updates to      │   │
+│ │   transforms    │    │ • Langevin MCMC │    │   structure tensors     │   │
+│ │ • Cart→Frac     │    │ • SDE solvers   │    │ • Manage batch indices  │   │
+│ │ • Element mask  │    │ • Step sizes    │    │ • Clipping/constraints  │   │
+│ │                 │    │                 │    │                         │   │
+│ │ 0 parameters    │    │ 0 parameters    │    │ 0 parameters            │   │
+│ └─────────────────┘    └─────────────────────┘    └─────────────────────────┘   │
+│                                                                             │
+│ WHAT THEY DO: Use learned score predictions to update structures            │
+│ IMPLEMENTATION: Fixed algorithms (SDEs, integration schemes)                │
+│ ROLE: Orchestrate the denoising process using learned model                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+TIME CONDITIONING FLOW:
+================================================================================
+
+Input timestep t: [batch_size] → Encoded throughout network:
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│                           TIME ENCODING PATHWAY                            │
+│                                                                            │
+│ t: [B] → NoiseLevelEncoding(t) → t_enc: [B, 512]                          │
+│              ↓                                                             │
+│ Concatenate with property embeddings:                                      │
+│ z_global = [t_enc, chemical_system_emb, space_group_emb, ...]             │
+│              ↓                                                             │
+│ Broadcast to all atoms: z_per_atom = z_global[batch_indices]              │
+│              ↓                                                             │
+│ Concatenate with atom embeddings: h = [atom_emb, z_per_atom]              │
+│              ↓                                                             │
+│ Flow through entire GemNet: atom_latent_emb(h) → message passing → output │
+│                                                                            │
+│ RESULT: Every parameter in GemNet is conditioned on timestep t            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+DETAILED PYTORCH LAYER SPECIFICATIONS:
+================================================================================
+
+MESSAGE PASSING (InteractionBlock):
+┌────────────────────────────────────────────────────────────────────────────┐
+│ class InteractionBlockTripletsOnly(torch.nn.Module):                      │
+│                                                                            │
+│     # Dense skip connection                                                │
+│     self.dense_ca = torch.nn.Linear(512, 512, bias=False)                 │
+│                                                                            │
+│     # Triplet interaction pathway                                          │
+│     self.trip_interaction = TripletInteraction(                           │
+│         down_proj=torch.nn.Linear(512, 64, bias=False),                   │
+│         bilinear=EfficientInteractionBilinear(64, 16, 64),                │
+│         up_proj_ca=torch.nn.Linear(64, 512, bias=False),                  │
+│         up_proj_ac=torch.nn.Linear(64, 512, bias=False)                   │
+│     )                                                                      │
+│                                                                            │
+│     # Residual blocks before skip (num_before_skip=1)                     │
+│     self.layers_before_skip = torch.nn.ModuleList([                       │
+│         ResidualLayer(512)  # 2x Linear(512,512) + skip connection        │
+│     ])                                                                     │
+│                                                                            │
+│     # Residual blocks after skip (num_after_skip=2)                       │
+│     self.layers_after_skip = torch.nn.ModuleList([                        │
+│         ResidualLayer(512),                                                │
+│         ResidualLayer(512)                                                 │
+│     ])                                                                     │
+│                                                                            │
+│     # Atom update block                                                    │
+│     self.atom_update = AtomUpdateBlock(emb_size_atom=512, nHidden=3)       │
+│                                                                            │
+│ Parameters per block: ~2-3M                                                │
+│ Activation: ScaledSiLU (SiLU * 1.667)                                     │
+│ Skip connections: Residual scaling by 1/√2                                │
+└────────────────────────────────────────────────────────────────────────────┘
+
+OUTPUT HEADS (OutputBlock):
+┌────────────────────────────────────────────────────────────────────────────┐
+│ class OutputBlock(torch.nn.Module):                                       │
+│                                                                            │
+│     # RBF processing                                                       │
+│     self.dense_rbf = torch.nn.Linear(16, 512, bias=False)                 │
+│                                                                            │
+│     # MLP with residual structure (num_atom=3)                            │
+│     self.layers = torch.nn.ModuleList([                                   │
+│         ResidualLayer(512),  # Block 1: 2x Linear + skip                  │
+│         ResidualLayer(512),  # Block 2: 2x Linear + skip                  │
+│         ResidualLayer(512)   # Block 3: 2x Linear + skip                  │
+│     ])                                                                     │
+│                                                                            │
+│     # Final prediction layer                                               │
+│     self.dense_final = torch.nn.Linear(512, num_targets, bias=False)      │
+│                                                                            │
+│ Multiple heads:                                                            │
+│ • Energy head: num_targets=1                                               │
+│ • Force head: num_targets=1 (per spatial dimension)                       │
+│ • Stress head: num_targets=1 (per lattice component)                      │
+│                                                                            │
+│ Parameters per head: ~300K                                                 │
+│ Total output parameters: ~900K                                             │
+└────────────────────────────────────────────────────────────────────────────┘
+
+RESIDUAL LAYER (Base Building Block):
+┌────────────────────────────────────────────────────────────────────────────┐
+│ class ResidualLayer(torch.nn.Module):                                     │
+│                                                                            │
+│     def __init__(self, units=512):                                         │
+│         self.dense1 = torch.nn.Linear(units, units, bias=False)           │
+│         self.dense2 = torch.nn.Linear(units, units, bias=False)           │
+│         self.activation = ScaledSiLU()  # SiLU * 1.667                    │
+│                                                                            │
+│     def forward(self, x):                                                  │
+│         residual = x                                                       │
+│         x = self.activation(self.dense1(x))                                │
+│         x = self.activation(self.dense2(x))                                │
+│         return (residual + x) * (1.0 / sqrt(2))  # Residual scaling       │
+│                                                                            │
+│ Parameters: 2 * (512 * 512) = 524,288 per ResidualLayer                   │
+│ Used throughout interaction blocks and output heads                        │
+└────────────────────────────────────────────────────────────────────────────┘
+
+KEY ARCHITECTURAL INSIGHTS:
+================================================================================
+
+1. DIFFUSION MODEL = ENTIRE GEMNET-T NETWORK
+   • All 15-20M parameters are part of the learned diffusion model
+   • The network learns: f(x_t, t, properties) → score/noise
+   • Training uses score matching loss on denoising objective
+
+2. TIME CONDITIONING IS GLOBAL
+   • Timestep t encoded once, broadcast to all atoms
+   • Every layer receives time information through z_per_atom
+   • Network learns time-dependent score functions
+
+3. SAMPLING USES LEARNED MODEL
+   • Predictor/Corrector are algorithmic (0 parameters)
+   • They repeatedly call the learned GemNet to get score predictions
+   • Integration schemes (Euler, Langevin) are fixed algorithms
+
+4. MULTI-MODAL LEARNING
+   • Single network predicts scores for positions, lattice, atom types
+   • Different output heads for different modalities
+   • Joint training across all modalities
+
+5. PROPERTY CONDITIONING
+   • Properties embedded separately, concatenated with time encoding
+   • Allows conditional generation (e.g., specific space groups)
+   • Enables classifier-free guidance during sampling
+
+CORRECTED UNDERSTANDING:
+================================================================================
+
+❌ WRONG: "Only output heads learn, sampling steps are separate"
+✅ CORRECT: "Entire GemNet learns score function, sampling algorithms use it"
+
+The diffusion model IS the neural network. Everything else is just algorithms
+that use the learned model to generate samples through iterative denoising.
+
+================================================================================

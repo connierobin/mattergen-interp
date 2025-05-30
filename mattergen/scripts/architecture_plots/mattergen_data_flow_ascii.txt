@@ -1,0 +1,155 @@
+================================================================================
+                    MATTERGEN: DETAILED INFORMATION FLOW DURING GENERATION
+================================================================================
+
+INPUT PHASE:
+┌─────────────────────┐    ┌──────────────────────┐    ┌─────────────────────────┐
+│   Conditioning Data │───▶│    Prior Sampling    │───▶│  Initial Noisy Tensors  │
+│                     │    │                      │    │                         │
+│ num_atoms: [B]      │    │ corruption.prior_    │    │ pos: [N_total, 3]      │
+│ chemical_system:    │    │ sampling()           │    │ cell: [B, 3, 3]        │
+│ [B, MAX_Z+1]        │    │                      │    │ atomic_numbers:         │
+│ properties: various │    │ Generates initial    │    │ [N_total]               │
+│                     │    │ noise for all modes  │    │                         │
+└─────────────────────┘    └──────────────────────┘    └─────────────────────────┘
+
+DENOISING LOOP: for t in [T_max, T_max-dt, ..., ε]
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                            SINGLE DENOISING STEP                             ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+TIME ENCODING:
+┌─────────────────────┐
+│   Time Encoding     │
+│                     │
+│ t: [B] ─────────────┼──▶ t_enc: [B, D]
+│ noise_level_        │
+│ encoding()          │
+│ + property          │
+│ embeddings          │
+└─────────────────────┘
+
+GEMNET SCORE COMPUTATION:
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│ Graph Construction  │───▶│   Graph Tensors     │───▶│  Atom Embedding     │
+│                     │    │                     │    │                     │
+│ frac_to_cart_       │    │ edge_index: [2, E]  │    │ atom_emb(atomic_    │
+│ coords()            │    │ distances: [E]      │    │ numbers)            │
+│                     │    │ unit_vectors: [E,3] │    │                     │
+│ generate_           │    │ triplet_indices:    │    │ z_per_atom =        │
+│ interaction_graph() │    │ [T, 3]              │    │ z[batch_idx]        │
+│                     │    │                     │    │                     │
+│ Creates edges       │    │ Periodic boundaries │    │ h = cat([h, z])     │
+│ within cutoff       │    │ handled             │    │ h: [N_total, D]     │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+                                                                 │
+                                                                 ▼
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│   GNN Outputs       │◄───│  Message Passing    │◄───│   Edge Embedding    │
+│                     │    │                     │    │                     │
+│ forces: [N, 3]      │    │ 4x Interaction      │    │ edge_emb(h, rbf,    │
+│ stress: [B, 3, 3]   │    │ Blocks              │    │ idx_s, idx_t)       │
+│ atom_logits:        │    │                     │    │                     │
+│ [N, MAX_Z+1]        │    │ Triplet             │    │ m: [E, D_edge]      │
+│                     │    │ interactions        │    │                     │
+│ Cartesian forces    │    │ Edge updates        │    │ Radial basis        │
+│ predict noise       │    │ Node refinement     │    │ functions           │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+
+SCORE CONVERSION:
+┌─────────────────────┐    ┌─────────────────────┐
+│  Score Conversion   │───▶│ Noise Predictions   │
+│                     │    │                     │
+│ Cart forces ──────▶ │    │ pos_score:          │
+│ Frac pos scores     │    │ [N_total, 3]        │
+│                     │    │                     │
+│ pos_score =         │    │ cell_score:         │
+│ (cell⁻¹)ᵀ @         │    │ [B, 3, 3]           │
+│ pred_forces         │    │                     │
+│                     │    │ atom_score:         │
+│ Element masking     │    │ [N_total, MAX_Z+1]  │
+│ for atom types      │    │                     │
+└─────────────────────┘    └─────────────────────┘
+
+PREDICTOR-CORRECTOR SAMPLING:
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│  Corrector Steps    │───▶│  Predictor Step     │───▶│  Updated Tensors    │
+│                     │    │                     │    │                     │
+│ n_corrector         │    │ Euler-Maruyama     │    │ pos: [N_total, 3]   │
+│ iterations          │    │ step                │    │ cell: [B, 3, 3]     │
+│                     │    │                     │    │ atomic_numbers:     │
+│ Langevin MCMC       │    │ dx = score * dt     │    │ [N_total]           │
+│ refinement          │    │                     │    │                     │
+│                     │    │ x_{t-dt} ← x_t + dx │    │ Less noisy than     │
+│ dx = score*dt +     │    │                     │    │ previous iteration  │
+│ noise*√dt           │    │ Different update    │    │                     │
+│ x ← x + dx          │    │ rules for discrete  │    │                     │
+│                     │    │ variables           │    │                     │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+                                                                 │
+                                                                 │
+            ┌────────────────────────────────────────────────────┘
+            │  LOOP BACK TO NEXT TIMESTEP t-dt
+            ▼  (unless t ≤ ε, then proceed to output)
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                           END OF DENOISING LOOP                              ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+FINAL OUTPUT CONVERSION:
+┌─────────────────────┐    ┌─────────────────────┐
+│ Structure           │───▶│ Pymatgen            │
+│ Conversion          │    │ Structures          │
+│                     │    │                     │
+│ lattice_matrix_     │    │ List[Structure]     │
+│ to_params()         │    │                     │
+│                     │    │ Lattice params:     │
+│ get_crystals_list() │    │ (a,b,c,α,β,γ)       │
+│                     │    │                     │
+│ make_structure()    │    │ Fractional          │
+│                     │    │ coordinates         │
+│ Split by num_atoms  │    │                     │
+│ per crystal         │    │ Element symbols     │
+└─────────────────────┘    └─────────────────────┘
+
+================================================================================
+                                KEY INSIGHTS
+================================================================================
+
+TENSOR FLOW SUMMARY:
+1. Input: Conditioning → Prior noise generation
+2. Loop: Noisy tensors → GemNet → Score prediction → PC updates → Less noisy tensors
+3. Output: Clean tensors → Structure conversion → Pymatgen objects
+
+CRITICAL DATA TRANSFORMATIONS:
+• Fractional ↔ Cartesian coordinate conversion for periodic boundary conditions
+• Batched variable-size graphs (N_total = sum(num_atoms) varies per batch)
+• Multi-modal diffusion: continuous SDEs (pos, cell) + discrete D3PM (atom types)
+• Score prediction in fractional space, not Cartesian
+• Element masking based on chemical system constraints
+
+SHAPE NOTATION:
+B = batch_size
+N_total = total number of atoms across all crystals in batch
+E = number of edges in the molecular graph
+T = number of triplets for angle calculations
+D = embedding dimension
+MAX_Z = maximum atomic number + 1 (for mask token)
+
+KEY OPERATIONS PER TIMESTEP:
+1. Time encoding: t → global features
+2. Graph construction: atoms/bonds → molecular graph
+3. GemNet forward: node/edge embeddings → force/stress/atom predictions
+4. Score conversion: Cartesian forces → fractional position scores
+5. PC sampling: scores → updated structures (less noisy)
+
+PERIODIC BOUNDARY CONDITIONS:
+• Handled naturally in graph construction (neighbor finding)
+• Coordinate transformations use lattice matrices
+• Force predictions in Cartesian, converted to fractional for score
+
+PROPERTY CONDITIONING:
+• Embedded as additional global features
+• Concatenated with time encoding
+• Enables conditional/unconditional generation via masking
+
+================================================================================
