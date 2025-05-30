@@ -1,0 +1,144 @@
+Late Insertion Cross-Conditioning Analysis
+============================================================
+
+1. Collecting baseline results...
+Loading baseline for dft_band_gap_insulator...
+  ✓ Loaded baseline: 156 (P3m1)
+Loading baseline for energy_above_hull_metastable...
+  ✓ Loaded baseline: 79 (I4)
+Loading baseline for space_group_cubic_fcc...
+  ✓ Loaded baseline: 38 (Amm2)
+
+2. Collecting cross-conditioning insertion results...
+
+Collecting results for dft_band_gap category...
+  ✓ dft_band_gap_metallic @ step 600: 38 (Amm2)
+  ✓ dft_band_gap_metallic @ step 800: 58 (Pnnm)
+  ✓ dft_band_gap_metallic @ step 900: 7 (Pc)
+  ✓ dft_band_gap_metallic @ step 950: 1 (P1)
+  ✓ dft_band_gap_narrow_semiconductor @ step 600: 25 (Pmm2)
+  ✓ dft_band_gap_narrow_semiconductor @ step 800: 8 (Cm)
+  ✓ dft_band_gap_narrow_semiconductor @ step 900: 1 (P1)
+  ✓ dft_band_gap_narrow_semiconductor @ step 950: 1 (P1)
+  ✓ dft_band_gap_wide_semiconductor @ step 600: 8 (Cm)
+  ✓ dft_band_gap_wide_semiconductor @ step 800: 12 (C2/m)
+  ✓ dft_band_gap_wide_semiconductor @ step 900: 1 (P1)
+  ✓ dft_band_gap_wide_semiconductor @ step 950: 1 (P1)
+
+Collecting results for energy_above_hull category...
+  ✓ energy_above_hull_stable @ step 600: 8 (Cm)
+  ✓ energy_above_hull_stable @ step 800: 6 (Pm)
+  ✓ energy_above_hull_stable @ step 900: 1 (P1)
+  ✓ energy_above_hull_stable @ step 950: 1 (P1)
+  ✓ energy_above_hull_unstable @ step 600: 8 (Cm)
+  ✓ energy_above_hull_unstable @ step 800: 1 (P1)
+  ✓ energy_above_hull_unstable @ step 900: 1 (P1)
+  ✓ energy_above_hull_unstable @ step 950: 1 (P1)
+
+Collecting results for space_group category...
+  ✓ space_group_cubic_primitive @ step 600: 1 (P1)
+  ✓ space_group_cubic_primitive @ step 800: 2 (P-1)
+  ✓ space_group_cubic_primitive @ step 900: 8 (Cm)
+  ✓ space_group_cubic_primitive @ step 950: 1 (P1)
+  ✓ space_group_hexagonal @ step 600: 5 (C2)
+  ✓ space_group_hexagonal @ step 800: 1 (P1)
+  ✓ space_group_hexagonal @ step 900: 1 (P1)
+  ✓ space_group_hexagonal @ step 950: 1 (P1)
+  ✓ space_group_tetragonal @ step 600: 8 (Cm)
+  ✓ space_group_tetragonal @ step 800: 1 (P1)
+  ✓ space_group_tetragonal @ step 900: 1 (P1)
+  ✓ space_group_tetragonal @ step 950: 1 (P1)
+  ✓ space_group_orthorhombic @ step 600: 8 (Cm)
+  ✓ space_group_orthorhombic @ step 800: 1 (P1)
+  ✓ space_group_orthorhombic @ step 900: 8 (Cm)
+  ✓ space_group_orthorhombic @ step 950: 1 (P1)
+
+3. Creating summary DataFrame...
+Saved summary data: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/insertion_analysis_summary.csv
+
+4. Analyzing success rates...
+Saved detailed results: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/insertion_analysis_detailed.json
+
+5. Generating plots...
+
+Plotting dft_band_gap results...
+Saved plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/dft_band_gap_property_evolution.png
+
+Plotting energy_above_hull results...
+Saved plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/energy_above_hull_property_evolution.png
+
+Plotting space_group results...
+Saved plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/space_group_property_evolution.png
+
+6. Generating trajectory evolution plots...
+
+Generating trajectory evolution plot for dft_band_gap...
+Saved trajectory evolution plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/dft_band_gap_trajectory_evolution.png
+
+Generating trajectory evolution plot for energy_above_hull...
+Saved trajectory evolution plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/energy_above_hull_trajectory_evolution.png
+
+Generating trajectory evolution plot for space_group...
+Saved trajectory evolution plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/space_group_trajectory_evolution.png
+
+7. Generating lattice parameter evolution plots...
+
+Generating lattice parameter plot for dft_band_gap...
+  Plotted Metallic: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Narrow Semiconductor: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Wide Semiconductor: 4 points at timesteps [600, 800, 900, 950]
+Saved lattice parameter plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/dft_band_gap_lattice_evolution.png
+
+Generating lattice parameter plot for energy_above_hull...
+  Plotted Stable: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Unstable: 4 points at timesteps [600, 800, 900, 950]
+Saved lattice parameter plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/energy_above_hull_lattice_evolution.png
+
+Generating lattice parameter plot for space_group...
+  Plotted Cubic Primitive: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Hexagonal: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Orthorhombic: 4 points at timesteps [600, 800, 900, 950]
+  Plotted Tetragonal: 4 points at timesteps [600, 800, 900, 950]
+Saved lattice parameter plot: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/space_group_lattice_evolution.png
+
+8. Generating lattice trajectory evolution plots...
+
+Generating lattice trajectory evolution for dft_band_gap...
+Saved lattice vector trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/dft_band_gap_lattice_vectors_trajectory.png
+Saved lattice angle trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/dft_band_gap_lattice_angles_trajectory.png
+
+Generating lattice trajectory evolution for energy_above_hull...
+Saved lattice vector trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/energy_above_hull_lattice_vectors_trajectory.png
+Saved lattice angle trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/energy_above_hull_lattice_angles_trajectory.png
+
+Generating lattice trajectory evolution for space_group...
+Saved lattice vector trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/space_group_lattice_vectors_trajectory.png
+Saved lattice angle trajectory: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results/space_group_lattice_angles_trajectory.png
+
+9. Summary Statistics:
+Total baseline structures analyzed: 3
+
+DFT_BAND_GAP Results:
+  Total insertion experiments: 12
+  Target conditions tested: 3
+  Timesteps tested: [600, 800, 900, 950]
+  Success analysis:
+
+ENERGY_ABOVE_HULL Results:
+  Total insertion experiments: 8
+  Target conditions tested: 2
+  Timesteps tested: [600, 800, 900, 950]
+  Success analysis:
+
+SPACE_GROUP Results:
+  Total insertion experiments: 16
+  Target conditions tested: 4
+  Timesteps tested: [600, 800, 900, 950]
+  Success analysis:
+    cubic primitive: 0/4 (0.0%) successful
+    hexagonal: 0/4 (0.0%) successful
+    tetragonal: 0/4 (0.0%) successful
+    orthorhombic: 0/4 (0.0%) successful
+
+Results saved in: mattergen/scripts/diffusion_step_analysis/insertion_analysis_results
+Analysis complete!

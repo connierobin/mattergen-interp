@@ -405,3 +405,6 @@ FodyWeavers.xsd
 
 # Virtual environment
 .venv/
+
+# Pseudopotentials folder (large files)
+pseudopotentials/

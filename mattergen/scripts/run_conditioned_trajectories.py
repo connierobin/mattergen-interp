@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Generate crystal structures conditioned on space_group, energy_above_hull, and formation_energy_per_atom.
+Generate crystal structures conditioned on space_group, energy_above_hull, formation_energy_per_atom, and dft_band_gap.
 
-This script creates runs with different conditioning values for the 3 properties of interest:
+This script creates runs with different conditioning values for the 4 properties of interest:
 1. space_group (categorical) - Different crystal symmetries  
 2. energy_above_hull (continuous) - Thermodynamic stability
 3. formation_energy_per_atom (continuous) - Formation energetics
+4. dft_band_gap (continuous) - Electronic band gap
 
 Results are organized in generated_structures/ with descriptive folder names for easy analysis.
 """
@@ -16,6 +17,7 @@ from typing import Dict, Any, List
 from mattergen.generator import CrystalGenerator
 from mattergen.common.utils.data_classes import MatterGenCheckpointInfo
 from mattergen.common.utils.data_classes import PRETRAINED_MODEL_NAME
+from typing import cast
 
 def get_next_run_number(base_dir: Path) -> int:
     """Find the next available run number by checking existing directories."""
@@ -36,10 +38,11 @@ def get_next_run_number(base_dir: Path) -> int:
 
 def get_available_conditioning_strategies() -> List[Dict[str, Any]]:
     """
-    Get conditioning strategies for the 3 properties of interest:
+    Get conditioning strategies for the 4 properties of interest:
     - space_group: Crystallographic space groups (categorical)
     - energy_above_hull: Thermodynamic stability (continuous)
     - formation_energy_per_atom: Formation energetics (continuous)
+    - dft_band_gap: Electronic band gap (continuous)
     """
     
     strategies = [
@@ -103,8 +106,8 @@ def get_available_conditioning_strategies() -> List[Dict[str, Any]]:
             "description": "Unstable (0.3 eV/atom above hull)"
         },
         
-        # Formation energy per atom conditioning (if trained model exists)
-        # Note: This will fail if no trained model exists for formation_energy_per_atom
+        # Formation energy per atom conditioning (uses base model as fallback)
+        # Note: This uses base model since no specific formation_energy_per_atom model exists
         {
             "name": "formation_energy_favorable",
             "checkpoint_path": "checkpoints/mattergen_base",  # Fallback to base model
@@ -122,6 +125,32 @@ def get_available_conditioning_strategies() -> List[Dict[str, Any]]:
             "checkpoint_path": "checkpoints/mattergen_base",  # Fallback to base model
             "conditions": {"formation_energy_per_atom": 0.5},  # Unfavorable
             "description": "Unfavorable formation (+0.5 eV/atom)"
+        },
+        
+        # DFT band gap conditioning (electronic properties)
+        {
+            "name": "dft_band_gap_metallic",
+            "checkpoint_path": "checkpoints/dft_band_gap",
+            "conditions": {"dft_band_gap": 0.0},  # Metallic (zero band gap)
+            "description": "Metallic (0.0 eV band gap)"
+        },
+        {
+            "name": "dft_band_gap_narrow_semiconductor",
+            "checkpoint_path": "checkpoints/dft_band_gap",
+            "conditions": {"dft_band_gap": 1.0},  # Narrow gap semiconductor
+            "description": "Narrow gap semiconductor (1.0 eV band gap)"
+        },
+        {
+            "name": "dft_band_gap_wide_semiconductor",
+            "checkpoint_path": "checkpoints/dft_band_gap",
+            "conditions": {"dft_band_gap": 3.0},  # Wide gap semiconductor
+            "description": "Wide gap semiconductor (3.0 eV band gap)"
+        },
+        {
+            "name": "dft_band_gap_insulator",
+            "checkpoint_path": "checkpoints/dft_band_gap",
+            "conditions": {"dft_band_gap": 6.0},  # Wide band gap insulator
+            "description": "Wide band gap insulator (6.0 eV band gap)"
         },
     ]
     
@@ -212,7 +241,7 @@ def generate_conditioned_crystals(
             if checkpoint_path in model_name_mapping:
                 # Use Hugging Face Hub
                 hf_model_name = model_name_mapping[checkpoint_path]
-                checkpoint_info = MatterGenCheckpointInfo.from_hf_hub(hf_model_name)
+                checkpoint_info = MatterGenCheckpointInfo.from_hf_hub(cast(PRETRAINED_MODEL_NAME, hf_model_name))
                 print(f"Using Hugging Face model: {hf_model_name}")
             else:
                 # Fallback to local path (will likely fail)

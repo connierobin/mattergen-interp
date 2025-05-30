@@ -4,7 +4,7 @@
 #SBATCH --error=jobs/conditioned_trajectories/job_%j.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=04:00:00
+#SBATCH --time=8:00:00
 #SBATCH --mem=88G
 #SBATCH --gres=gpu:1
 #SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT_90    # When to send email notifications
@@ -16,4 +16,4 @@ export WANDB_API_KEY="[REMOVED]"
 export HF_TOKEN="[REMOVED]"
 # Run your script
 # python mattergen/scripts/diffusion_step_analysis/test_conditioned_generation.py
-python run_conditioned_trajectories.py
+python mattergen/scripts/run_conditioned_trajectories.py

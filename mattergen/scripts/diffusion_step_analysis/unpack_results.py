@@ -1,7 +1,7 @@
 import io
 import zipfile
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from collections import Counter, defaultdict
 
 import ase.io
@@ -64,11 +64,12 @@ def load_final_structures(output_dir: Path) -> List[Structure]:
     
     raise FileNotFoundError(f"No structure files found in {output_dir}")
 
-def load_trajectories(output_dir: Path) -> List[List[Structure]]:
-    """Load all trajectories from the generated_trajectories.zip file.
+def load_trajectories(output_dir: Path, max_trajectories: Optional[int] = None) -> List[List[Structure]]:
+    """Load trajectories from the generated_trajectories.zip file.
     
     Args:
         output_dir: Directory containing the generation results
+        max_trajectories: Maximum number of trajectories to load (None for all)
         
     Returns:
         List of trajectories, where each trajectory is a list of Structure objects
@@ -79,13 +80,17 @@ def load_trajectories(output_dir: Path) -> List[List[Structure]]:
     
     trajectories = []
     with zipfile.ZipFile(traj_file) as zf:
-        for filename in sorted(zf.namelist()):
-            if filename.endswith('.extxyz'):
-                with zf.open(filename) as f:
-                    content = io.StringIO(f.read().decode())
-                    atoms_list = ase.io.read(content, index=":", format="extxyz")
-                    structures = [AseAtomsAdaptor.get_structure(atoms) for atoms in atoms_list]
-                    trajectories.append(structures)
+        filenames = sorted([f for f in zf.namelist() if f.endswith('.extxyz')])
+        if max_trajectories:
+            filenames = filenames[:max_trajectories]
+            print(f"Loading {len(filenames)} out of {len([f for f in zf.namelist() if f.endswith('.extxyz')])} available trajectories")
+        
+        for filename in filenames:
+            with zf.open(filename) as f:
+                content = io.StringIO(f.read().decode())
+                atoms_list = ase.io.read(content, index=":", format="extxyz")
+                structures = [AseAtomsAdaptor.get_structure(atoms) for atoms in atoms_list]
+                trajectories.append(structures)
     
     return trajectories
 
@@ -382,6 +387,130 @@ def analyze_atom_finalization_by_element(trajectory: List[Structure]) -> Dict[st
         
     return element_percentages
 
+
+def analyze_element_finalization_timing(trajectories: List[List[Structure]]) -> Dict[str, Any]:
+    """Analyze when each element reaches 100% finalization and leaves 0% finalization.
+    
+    Returns:
+        Dict containing timing analysis for each element
+    """
+    # Get per-element data for all trajectories
+    all_element_percentages = []
+    for traj in trajectories:
+        post_corrector_traj = traj[1::2]  # Start from index 1, step by 2
+        all_element_percentages.append(analyze_atom_finalization_by_element(post_corrector_traj))
+    
+    # Find all unique elements
+    all_elements = set()
+    for percentages in all_element_percentages:
+        all_elements.update(percentages.keys())
+    
+    timing_analysis = {}
+    
+    for element in sorted(all_elements):
+        # Gather data for this element from all trajectories
+        element_data = []
+        for traj_data in all_element_percentages:
+            if element in traj_data:
+                element_data.append(traj_data[element])
+        
+        if not element_data:
+            continue
+            
+        # Find timing statistics for this element
+        reaches_100_steps = []
+        leaves_0_steps = []
+        sample_count = len(element_data)
+        
+        for trajectory_data in element_data:
+            # Steps go from 0 to 1000, we sample every 50 steps, so indices 0,1,2... correspond to steps 0,50,100...
+            steps = np.linspace(0, 1000, len(trajectory_data))
+            
+            # Find when element reaches 100% (if ever)
+            reaches_100_idx = np.where(trajectory_data >= 99.9)[0]  # Use 99.9 to account for floating point
+            if len(reaches_100_idx) > 0:
+                reaches_100_steps.append(steps[reaches_100_idx[0]])
+            
+            # Find when element leaves 0% (if ever)
+            leaves_0_idx = np.where(trajectory_data > 0.1)[0]  # Use 0.1 to account for floating point
+            if len(leaves_0_idx) > 0:
+                leaves_0_steps.append(steps[leaves_0_idx[0]])
+        
+        timing_analysis[element] = {
+            'sample_count': sample_count,
+            'reaches_100_count': len(reaches_100_steps),
+            'leaves_0_count': len(leaves_0_steps),
+            'reaches_100_steps': reaches_100_steps,
+            'leaves_0_steps': leaves_0_steps,
+            'avg_reaches_100': np.mean(reaches_100_steps) if reaches_100_steps else None,
+            'std_reaches_100': np.std(reaches_100_steps) if reaches_100_steps else None,
+            'min_reaches_100': np.min(reaches_100_steps) if reaches_100_steps else None,
+            'avg_leaves_0': np.mean(leaves_0_steps) if leaves_0_steps else None,
+            'std_leaves_0': np.std(leaves_0_steps) if leaves_0_steps else None,
+            'min_leaves_0': np.min(leaves_0_steps) if leaves_0_steps else None,
+        }
+    
+    return timing_analysis
+
+
+def print_element_timing_analysis(timing_analysis: Dict[str, Any]):
+    """Print analysis of element finalization timing."""
+    print("\n=== Element Finalization Timing Analysis ===")
+    
+    # Sort elements by how early they reach 100% (on average)
+    elements_with_100 = [(elem, data) for elem, data in timing_analysis.items() 
+                        if data['avg_reaches_100'] is not None]
+    elements_with_100.sort(key=lambda x: x[1]['avg_reaches_100'])
+    
+    print("\n--- EARLIEST TO REACH 100% FINALIZATION ---")
+    print("Element | Avg Step | Min Step | Count/Total | Std Dev")
+    print("-" * 55)
+    for elem, data in elements_with_100[:10]:  # Top 10 earliest
+        avg_step = data['avg_reaches_100']
+        min_step = data['min_reaches_100']
+        count = data['reaches_100_count']
+        total = data['sample_count']
+        std_dev = data['std_reaches_100']
+        print(f"{elem:7s} | {avg_step:8.0f} | {min_step:8.0f} | {count:4d}/{total:4d} | {std_dev:7.1f}")
+    
+    # Sort elements by how late they leave 0%
+    elements_with_0 = [(elem, data) for elem, data in timing_analysis.items() 
+                      if data['avg_leaves_0'] is not None]
+    elements_with_0.sort(key=lambda x: x[1]['avg_leaves_0'], reverse=True)
+    
+    print("\n--- LATEST TO LEAVE 0% FINALIZATION ---")
+    print("Element | Avg Step | Min Step | Count/Total | Std Dev")
+    print("-" * 55)
+    for elem, data in elements_with_0[:10]:  # Top 10 latest
+        avg_step = data['avg_leaves_0']
+        min_step = data['min_leaves_0']
+        count = data['leaves_0_count']
+        total = data['sample_count']
+        std_dev = data['std_leaves_0']
+        print(f"{elem:7s} | {avg_step:8.0f} | {min_step:8.0f} | {count:4d}/{total:4d} | {std_dev:7.1f}")
+    
+    # Summary statistics
+    print("\n--- SUMMARY STATISTICS ---")
+    total_elements = len(timing_analysis)
+    elements_reaching_100 = len(elements_with_100)
+    elements_leaving_0 = len(elements_with_0)
+    
+    print(f"Total elements analyzed: {total_elements}")
+    print(f"Elements that reach 100% in some trajectories: {elements_reaching_100}")
+    print(f"Elements that leave 0% in some trajectories: {elements_leaving_0}")
+    
+    if elements_with_100:
+        earliest_elem, earliest_data = elements_with_100[0]
+        latest_100_elem, latest_100_data = elements_with_100[-1]
+        print(f"\nEarliest to 100%: {earliest_elem} (avg: {earliest_data['avg_reaches_100']:.0f} steps)")
+        print(f"Latest to 100%: {latest_100_elem} (avg: {latest_100_data['avg_reaches_100']:.0f} steps)")
+    
+    if elements_with_0:
+        earliest_0_elem, earliest_0_data = min(elements_with_0, key=lambda x: x[1]['avg_leaves_0'])
+        latest_0_elem, latest_0_data = elements_with_0[0]  # Already sorted by latest
+        print(f"\nEarliest to leave 0%: {earliest_0_elem} (avg: {earliest_0_data['avg_leaves_0']:.0f} steps)")
+        print(f"Latest to leave 0%: {latest_0_elem} (avg: {latest_0_data['avg_leaves_0']:.0f} steps)")
+
 def analyze_lattice_evolution(trajectory: List[Structure]) -> Dict[str, np.ndarray]:
     """Analyze the evolution of lattice parameters.
     
@@ -502,8 +631,6 @@ def plot_finalization_curves(trajectories: List[List[Structure]], output_dir: Pa
         
         steps = np.linspace(0, 1000, max_length)
         plt.plot(steps, mean_data, '-', color=color, linewidth=2, label=element)
-        plt.fill_between(steps, mean_data - std_data, mean_data + std_data,
-                        color=color, alpha=0.2)
     
     plt.xlabel('Diffusion Step')
     plt.ylabel('Percentage in Final State')
@@ -1129,10 +1256,21 @@ def analyze_bond_lengths(structures: List[Structure], output_dir: Path):
         print(f"  Max: {np.max(distances):.3f} Å")
 
 def main():
-    output_dir = Path("generated_structures")
+    import sys
     
+    # Allow specifying output directory and max trajectories as command line arguments
+    if len(sys.argv) > 1:
+        output_dir = Path(sys.argv[1])
+    else:
+        output_dir = Path("generated_structures")
+    
+    max_trajectories = None
+    if len(sys.argv) > 2:
+        max_trajectories = int(sys.argv[2])
+    
+    print(f"\nAnalyzing trajectories in: {output_dir}")
     print("\nLoading trajectories...")
-    trajectories = load_trajectories(output_dir)
+    trajectories = load_trajectories(output_dir, max_trajectories)
     print(f"Loaded {len(trajectories)} trajectories")
     
     print("\nAnalyzing final structures...")
@@ -1140,8 +1278,7 @@ def main():
     lattice_analyses = analyze_final_structures(trajectories)
     print_lattice_analysis(lattice_analyses)
     
-    print("\nAnalyzing bond lengths...")
-    analyze_bond_lengths(final_structures, output_dir)
+    print("\nSkipping bond length analysis (too many bond types)...")
     
     print("\nCreating analysis plots...")
     plot_finalization_curves(trajectories, output_dir)
