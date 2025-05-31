@@ -18,11 +18,11 @@
       "formula": "H3F4O",
       "num_atoms": 8,
       "elements": [
+        "O",
         "H",
-        "F",
-        "O"
+        "F"
       ],
-      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "error": "'symbols'",
       "converged": false,
       "source_condition": "space_group_cubic_fcc",
       "target_condition": "space_group_orthorhombic",

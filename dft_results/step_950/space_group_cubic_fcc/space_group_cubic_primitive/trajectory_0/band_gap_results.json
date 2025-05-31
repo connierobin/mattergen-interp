@@ -19,9 +19,9 @@
       "num_atoms": 8,
       "elements": [
         "H",
-        "F",
         "Li",
-        "K"
+        "K",
+        "F"
       ],
       "error": "Missing pseudopotential for Li",
       "converged": false,

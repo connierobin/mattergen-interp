@@ -18,8 +18,8 @@
       "formula": "Cl2F6",
       "num_atoms": 8,
       "elements": [
-        "Cl",
-        "F"
+        "F",
+        "Cl"
       ],
       "error": "Missing pseudopotential for Cl",
       "converged": false,

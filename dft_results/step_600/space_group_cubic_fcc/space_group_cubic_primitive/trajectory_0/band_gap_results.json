@@ -18,8 +18,8 @@
       "formula": "Br5Hg2Se",
       "num_atoms": 8,
       "elements": [
-        "Br",
         "Hg",
+        "Br",
         "Se"
       ],
       "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",

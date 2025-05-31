@@ -18,8 +18,8 @@
       "formula": "Ge4Mg3Rh",
       "num_atoms": 8,
       "elements": [
-        "Ge",
         "Rh",
+        "Ge",
         "Mg"
       ],
       "error": "Missing pseudopotential for Rh",

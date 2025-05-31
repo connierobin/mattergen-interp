@@ -18,9 +18,9 @@
       "formula": "Cd2F6Na2",
       "num_atoms": 10,
       "elements": [
-        "Na",
+        "Cd",
         "F",
-        "Cd"
+        "Na"
       ],
       "error": "Missing pseudopotential for Na",
       "converged": false,

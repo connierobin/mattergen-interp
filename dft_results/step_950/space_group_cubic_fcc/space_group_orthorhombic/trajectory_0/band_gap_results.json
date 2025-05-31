@@ -9,8 +9,8 @@
   "summary": {
     "total_structures": 1,
     "calculated_structures": 1,
-    "successful_calculations": 0,
-    "failed_calculations": 1
+    "successful_calculations": 1,
+    "failed_calculations": 0
   },
   "results": [
     {
@@ -18,13 +18,16 @@
       "formula": "H5HgOTe",
       "num_atoms": 8,
       "elements": [
-        "Te",
         "O",
         "H",
+        "Te",
         "Hg"
       ],
-      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
-      "converged": false,
+      "scf_energy_ev": -5222.3665194106825,
+      "estimated_band_gap_ev": 3.7275703866601058,
+      "is_metal": false,
+      "calculation_time_seconds": 11.322748184204102,
+      "converged": true,
       "source_condition": "space_group_cubic_fcc",
       "target_condition": "space_group_orthorhombic",
       "step": "step_950",

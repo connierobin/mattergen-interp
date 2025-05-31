@@ -18,8 +18,8 @@
       "formula": "H3B",
       "num_atoms": 4,
       "elements": [
-        "B",
-        "H"
+        "H",
+        "B"
       ],
       "error": "Missing pseudopotential for B",
       "converged": false,

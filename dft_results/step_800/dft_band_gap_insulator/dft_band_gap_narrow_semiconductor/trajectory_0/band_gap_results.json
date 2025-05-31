@@ -18,9 +18,9 @@
       "formula": "C2NSr",
       "num_atoms": 4,
       "elements": [
-        "Sr",
         "N",
-        "C"
+        "C",
+        "Sr"
       ],
       "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
       "converged": false,

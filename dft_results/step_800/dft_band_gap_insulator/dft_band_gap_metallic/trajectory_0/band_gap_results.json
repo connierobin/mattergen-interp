@@ -20,7 +20,7 @@
       "elements": [
         "O"
       ],
-      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "error": "'symbols'",
       "converged": false,
       "source_condition": "dft_band_gap_insulator",
       "target_condition": "dft_band_gap_metallic",

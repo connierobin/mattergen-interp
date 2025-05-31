@@ -19,10 +19,10 @@
       "num_atoms": 10,
       "elements": [
         "O",
-        "S",
-        "H",
         "F",
-        "Cl"
+        "H",
+        "Cl",
+        "S"
       ],
       "error": "Missing pseudopotential for Cl",
       "converged": false,

@@ -18,10 +18,10 @@
       "formula": "H6AsB2Si",
       "num_atoms": 10,
       "elements": [
-        "H",
         "As",
         "Si",
-        "B"
+        "B",
+        "H"
       ],
       "error": "Missing pseudopotential for B",
       "converged": false,

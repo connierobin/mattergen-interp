@@ -18,8 +18,8 @@
       "formula": "H5AgBN",
       "num_atoms": 8,
       "elements": [
-        "H",
         "Ag",
+        "H",
         "N",
         "B"
       ],

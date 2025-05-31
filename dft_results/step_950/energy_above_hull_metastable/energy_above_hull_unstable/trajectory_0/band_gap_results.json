@@ -18,9 +18,9 @@
       "formula": "H6BrOS2",
       "num_atoms": 10,
       "elements": [
-        "S",
-        "Br",
         "O",
+        "Br",
+        "S",
         "H"
       ],
       "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",

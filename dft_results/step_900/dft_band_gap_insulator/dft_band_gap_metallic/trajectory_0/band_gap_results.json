@@ -18,10 +18,10 @@
       "formula": "H2F2",
       "num_atoms": 4,
       "elements": [
-        "F",
-        "H"
+        "H",
+        "F"
       ],
-      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "error": "setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.",
       "converged": false,
       "source_condition": "dft_band_gap_insulator",
       "target_condition": "dft_band_gap_metallic",

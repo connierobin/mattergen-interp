@@ -18,9 +18,9 @@
       "formula": "FNO2",
       "num_atoms": 4,
       "elements": [
-        "F",
         "N",
-        "O"
+        "O",
+        "F"
       ],
       "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
       "converged": false,

@@ -18,9 +18,9 @@
       "formula": "H6ErSe",
       "num_atoms": 8,
       "elements": [
+        "Se",
         "Er",
-        "H",
-        "Se"
+        "H"
       ],
       "error": "Missing pseudopotential for Er",
       "converged": false,

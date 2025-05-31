@@ -1,0 +1,40 @@
+{
+  "test_info": {
+    "structure_file": "generated_structures/run003/generated_crystals.extxyz",
+    "total_structures_in_file": 3200,
+    "structures_tested": 2
+  },
+  "summary": {
+    "total_tested": 2,
+    "successful_calculations": 0,
+    "failed_calculations": 2
+  },
+  "results": [
+    {
+      "structure_id": 0,
+      "formula": "BaSe6Tl5",
+      "num_atoms": 12,
+      "elements": [
+        "Ba",
+        "Tl",
+        "Se"
+      ],
+      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "converged": false,
+      "structure_type": "baseline_run003"
+    },
+    {
+      "structure_id": 1,
+      "formula": "Cd2TlZr",
+      "num_atoms": 4,
+      "elements": [
+        "Tl",
+        "Zr",
+        "Cd"
+      ],
+      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "converged": false,
+      "structure_type": "baseline_run003"
+    }
+  ]
+}

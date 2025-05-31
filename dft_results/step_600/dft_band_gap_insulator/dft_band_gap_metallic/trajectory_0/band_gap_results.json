@@ -18,9 +18,9 @@
       "formula": "AgEu2Pt",
       "num_atoms": 4,
       "elements": [
-        "Ag",
+        "Eu",
         "Pt",
-        "Eu"
+        "Ag"
       ],
       "error": "((2, 0), 8)",
       "converged": false,
