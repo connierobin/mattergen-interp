@@ -166,11 +166,15 @@ class PredictorCorrector(Generic[Diffusable]):
         conditioning_data = conditioning_data.to(self._device)
         mask = {k: v.to(self._device) for k, v in mask.items()}
 
+<<<<<<< HEAD
         # Use provided start_structure if available, otherwise sample from prior
         if start_structure is not None:
             batch = start_structure.to(self._device)
         else:
             batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
+=======
+        batch = _sample_prior(self._multi_corruption, conditioning_data, mask=mask)
+>>>>>>> origin/main
         
         # Use new denoising function if time_config is provided
         if time_config is not None:

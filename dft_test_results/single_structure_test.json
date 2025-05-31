@@ -1,0 +1,12 @@
+{
+  "formula": "LiPdZn",
+  "num_atoms": 4,
+  "calculation_time_seconds": 0.1,
+  "band_gap_ev": 0.0,
+  "direct_gap_ev": 0.01539341485143314,
+  "is_metal": true,
+  "fermi_energy_ev": -1.2736866819673804,
+  "vbm_ev": -1.2736866819673804,
+  "cbm_ev": -1.2736866819673804,
+  "convergence_achieved": true
+}

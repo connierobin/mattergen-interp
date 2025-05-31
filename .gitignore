@@ -17,6 +17,15 @@ generated_structures/
 *.zip
 *.extxyz
 
+# DFT and pseudopotential files
+*pseudo*
+*ase_fix*
+espresso.*
+input_tmp.in
+*.err
+*.pwi
+*.pwo
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -406,3 +415,6 @@ FodyWeavers.xsd
 
 # Virtual environment
 .venv/
+
+# Pseudopotentials folder (large files)
+pseudopotentials/

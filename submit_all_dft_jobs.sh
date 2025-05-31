@@ -1,0 +1,154 @@
+#!/bin/bash
+# Submit all DFT band gap calculation jobs
+
+echo "Submitting DFT band gap calculation jobs..."
+echo "Total jobs: 36"
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_600_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_600_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_800_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_800_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_900_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_900_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_metallic_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_narrow_semiconductor_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_dft_band_gap_insulator_to_dft_band_gap_wide_semiconductor_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_stable_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_energy_above_hull_metastable_to_energy_above_hull_unstable_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_cubic_primitive_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_hexagonal_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_orthorhombic_step_950_trajectory_0.sh
+sleep 1
+
+echo "Submitting jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_950_trajectory_0.sh..."
+sbatch jobs/dft_band_gaps/dft_space_group_cubic_fcc_to_space_group_tetragonal_step_950_trajectory_0.sh
+sleep 1
+
+
+echo "All jobs submitted!"
+echo "Monitor with: squeue --me"
+echo "Results will be saved in: dft_results/"
