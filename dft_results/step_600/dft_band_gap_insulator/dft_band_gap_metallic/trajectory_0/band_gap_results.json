@@ -1,0 +1,33 @@
+{
+  "job_info": {
+    "source": "dft_band_gap_insulator",
+    "target": "dft_band_gap_metallic",
+    "step": "step_600",
+    "trajectory": "trajectory_0",
+    "structure_file": "generated_structures/cross_conditioned_late_insertion/step_600/dft_band_gap_insulator/dft_band_gap_metallic/trajectory_0/generated_crystals.extxyz"
+  },
+  "summary": {
+    "total_structures": 1,
+    "calculated_structures": 1,
+    "successful_calculations": 0,
+    "failed_calculations": 1
+  },
+  "results": [
+    {
+      "structure_id": 0,
+      "formula": "AgEu2Pt",
+      "num_atoms": 4,
+      "elements": [
+        "Ag",
+        "Pt",
+        "Eu"
+      ],
+      "error": "((2, 0), 8)",
+      "converged": false,
+      "source_condition": "dft_band_gap_insulator",
+      "target_condition": "dft_band_gap_metallic",
+      "step": "step_600",
+      "trajectory": "trajectory_0"
+    }
+  ]
+}

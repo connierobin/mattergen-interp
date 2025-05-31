@@ -1,0 +1,35 @@
+{
+  "job_info": {
+    "source": "energy_above_hull_metastable",
+    "target": "energy_above_hull_unstable",
+    "step": "step_900",
+    "trajectory": "trajectory_0",
+    "structure_file": "generated_structures/cross_conditioned_late_insertion/step_900/energy_above_hull_metastable/energy_above_hull_unstable/trajectory_0/generated_crystals.extxyz"
+  },
+  "summary": {
+    "total_structures": 1,
+    "calculated_structures": 1,
+    "successful_calculations": 0,
+    "failed_calculations": 1
+  },
+  "results": [
+    {
+      "structure_id": 0,
+      "formula": "H6CsNOSi",
+      "num_atoms": 10,
+      "elements": [
+        "O",
+        "Si",
+        "H",
+        "N",
+        "Cs"
+      ],
+      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "converged": false,
+      "source_condition": "energy_above_hull_metastable",
+      "target_condition": "energy_above_hull_unstable",
+      "step": "step_900",
+      "trajectory": "trajectory_0"
+    }
+  ]
+}

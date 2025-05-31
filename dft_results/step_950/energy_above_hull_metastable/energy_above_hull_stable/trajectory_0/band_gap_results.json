@@ -1,0 +1,35 @@
+{
+  "job_info": {
+    "source": "energy_above_hull_metastable",
+    "target": "energy_above_hull_stable",
+    "step": "step_950",
+    "trajectory": "trajectory_0",
+    "structure_file": "generated_structures/cross_conditioned_late_insertion/step_950/energy_above_hull_metastable/energy_above_hull_stable/trajectory_0/generated_crystals.extxyz"
+  },
+  "summary": {
+    "total_structures": 1,
+    "calculated_structures": 1,
+    "successful_calculations": 0,
+    "failed_calculations": 1
+  },
+  "results": [
+    {
+      "structure_id": 0,
+      "formula": "H3Cl2F2O2S",
+      "num_atoms": 10,
+      "elements": [
+        "O",
+        "S",
+        "H",
+        "F",
+        "Cl"
+      ],
+      "error": "Missing pseudopotential for Cl",
+      "converged": false,
+      "source_condition": "energy_above_hull_metastable",
+      "target_condition": "energy_above_hull_stable",
+      "step": "step_950",
+      "trajectory": "trajectory_0"
+    }
+  ]
+}

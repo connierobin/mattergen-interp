@@ -1,0 +1,32 @@
+{
+  "job_info": {
+    "source": "dft_band_gap_insulator",
+    "target": "dft_band_gap_wide_semiconductor",
+    "step": "step_900",
+    "trajectory": "trajectory_0",
+    "structure_file": "generated_structures/cross_conditioned_late_insertion/step_900/dft_band_gap_insulator/dft_band_gap_wide_semiconductor/trajectory_0/generated_crystals.extxyz"
+  },
+  "summary": {
+    "total_structures": 1,
+    "calculated_structures": 1,
+    "successful_calculations": 0,
+    "failed_calculations": 1
+  },
+  "results": [
+    {
+      "structure_id": 0,
+      "formula": "H2S2",
+      "num_atoms": 4,
+      "elements": [
+        "S",
+        "H"
+      ],
+      "error": "Command '['/mnt/polished-lake/home/cdrobinson/bin/pw.x', '<', 'PREFIX.pwi', '>', 'PREFIX.pwo', '-in', 'espresso.pwi']' returned non-zero exit status 1.",
+      "converged": false,
+      "source_condition": "dft_band_gap_insulator",
+      "target_condition": "dft_band_gap_wide_semiconductor",
+      "step": "step_900",
+      "trajectory": "trajectory_0"
+    }
+  ]
+}
